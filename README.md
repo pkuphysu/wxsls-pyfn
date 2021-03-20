@@ -1,0 +1,3 @@
+```sql
+CREATE DATABASE wechat WITH ENCODING 'UTF8'
+```

@@ -1,0 +1,21 @@
+{
+    "headers": {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+        "accept-encoding": "gzip, deflate, br",
+        "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+        "connection": "keep-alive",
+        "host": "test-1gqklvud76536093-1305100718.ap-shanghai.service.tcloudbase.com",
+        "upgrade-insecure-requests": "1",
+        "x-client-proto": "https",
+        "x-client-proto-ver": "HTTP/2.0",
+        "x-forwarded-for": "115.27.203.158",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "115.27.203.158"
+    },
+    "httpMethod": "GET",
+    "isBase64Encoded": false,
+    "path": "/echo",
+    "queryStringParameters": {
+        "q": "12314"
+    }
+}

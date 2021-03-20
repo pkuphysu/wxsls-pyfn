@@ -1,0 +1,14 @@
+[default.flask]
+SECRET_KEY = "7onlVsgKlQKv85RLLTw6-g"
+TESTING = false
+SQLALCHEMY_TRACK_MODIFICATIONS = false
+SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://user:password@localhost/wechat"
+
+[default.flask.SQLALCHEMY_ENGINE_OPTIONS.connect_args]
+client_encoding = "utf8"
+
+[default.wechat]
+APP_ID = ""
+APP_SECRET = ""
+TOKEN = ""
+MASTER_IDS = ["MASTER"]

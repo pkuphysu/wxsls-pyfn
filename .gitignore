@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.vscode/
+
+.python-version
+release*.zip
