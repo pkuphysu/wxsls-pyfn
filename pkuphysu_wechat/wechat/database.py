@@ -40,7 +40,8 @@ class AccessToken(db.Model):
         response = urllib.request.urlopen(URL)
         js_str = response.read().decode()
         js = json.loads(js_str)
-        logger.debug(js)
+        if "access_token" not in js:
+            raise ValueError("Access token not found in " + js_str)
         token = js["access_token"]
         expire_time = now + timedelta(seconds=7000)
         db.session.add(cls(token=token, expire_time=expire_time))
