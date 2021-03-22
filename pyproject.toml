@@ -31,7 +31,8 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-releaser = "pkuphysu_wechat.releaser:main"
+releaser = "pkuphysu_wechat.cli.releaser:main"
+wechat = "pkuphysu_wechat.cli.wechat:cli"
 
 [tool.isort]
 multi_line_output = 3
