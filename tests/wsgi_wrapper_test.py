@@ -11,4 +11,5 @@ def test_work(filename):
     with open(Path(__file__).parent / "data" / filename) as f:
         event = json.load(f)
     result = main(event, None)
-    assert result == "12314"
+    assert result["body"] == "12314"
+    assert result["statusCode"] == 200
