@@ -1,3 +1,6 @@
+[default]
+TASK_AUTH_TOKEN = ""
+
 [default.flask]
 SECRET_KEY = "7onlVsgKlQKv85RLLTw6-g"
 TESTING = false

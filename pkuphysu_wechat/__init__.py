@@ -12,9 +12,10 @@ def create_app():
 
     db.init_app(app)
 
-    from . import wechat
+    from . import tasks, wechat
 
     app.register_blueprint(wechat.bp)
+    app.register_blueprint(tasks.bp)
 
     db.create_all(app=app)
 
