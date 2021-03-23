@@ -1,17 +1,9 @@
-# from base64 import b64encode
-import json
-import urllib.request
 from datetime import datetime, timedelta
 from logging import getLogger
-from typing import Dict
+from typing import Callable, Dict
 
 from pkuphysu_wechat import db
-from pkuphysu_wechat.config import settings
 
-URL = (
-    "https://api.weixin.qq.com/cgi-bin/token"
-    "?grant_type=client_credential&appid={}&secret={}"
-).format(settings.wechat.APP_ID, settings.wechat.APP_SECRET)
 logger = getLogger(__name__)
 
 
@@ -29,7 +21,7 @@ class AccessToken(db.Model):
     expire_time = db.Column(db.DateTime())
 
     @classmethod
-    def get(cls) -> str:
+    def get(cls, token_getter: Callable) -> str:
         access_token = cls.query.first()
         now = datetime.now()
         if access_token is not None:
@@ -37,13 +29,11 @@ class AccessToken(db.Model):
                 return access_token.token
             db.session.delete(access_token)
 
-        response = urllib.request.urlopen(URL)
-        js_str = response.read().decode()
-        js = json.loads(js_str)
-        if "access_token" not in js:
-            raise ValueError("Access token not found in " + js_str)
-        token = js["access_token"]
-        expire_time = now + timedelta(seconds=7000)
+        json_response = token_getter()
+        if "access_token" not in json_response:
+            raise ValueError("Access token not found in " + json_response)
+        token = json_response["access_token"]
+        expire_time = now + timedelta(seconds=json_response["expires_in"])
         db.session.add(cls(token=token, expire_time=expire_time))
         db.session.commit()
         return token

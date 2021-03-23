@@ -46,7 +46,7 @@ class CommandRegistry(command4bot.CommandRegistry):
 
 class WechatClient(Client):
     def get_access_token(self):
-        return AccessToken.get()
+        return AccessToken.get(self.grant_token)
 
 
 wechat_robot = werobot.WeRoBot(
