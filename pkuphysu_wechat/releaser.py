@@ -9,7 +9,7 @@ from pip._internal.req.req_uninstall import UninstallPathSet
 from pip._internal.utils.misc import get_distribution
 
 PROJECT_FILE_EXCLUDE = ["releaser.py", ".secrets.local.toml"]
-PACKAGE_ROOT = os.path.dirname(os.path.dirname(__file__))
+PACKAGE_ROOT = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.dirname(PACKAGE_ROOT)
 
 
