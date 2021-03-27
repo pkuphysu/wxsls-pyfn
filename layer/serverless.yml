@@ -1,0 +1,10 @@
+component: layer
+name: pkuphysu-wechat-layer
+app: pkuphysu-wechat
+stage: ${env:STAGE}
+inputs:
+  region: ap-shanghai
+  zone: ap-shanghai-2
+  src: ${env:LAYER_SRC}
+  runtimes:
+    - Python3.6

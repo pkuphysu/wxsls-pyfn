@@ -4,7 +4,6 @@ from dynaconf import Dynaconf
 
 settings = Dynaconf(
     environments=True,
-    env="FLASK_ENV",
     envvar_prefix="DYNACONF",
     settings_files=[
         os.path.join(os.path.dirname(__file__), filename)

@@ -1,0 +1,11 @@
+app: pkuphysu-wechat
+stage: ${env:STAGE}
+component: postgresql
+name: pkuphysu-wechat-db
+inputs:
+  region: ap-shanghai
+  zone: ap-shanghai-2
+  dBInstanceName: serverlessDB
+  vpcConfig:
+    vpcId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.vpcId}
+    subnetId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.subnetId}

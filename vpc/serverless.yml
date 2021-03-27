@@ -1,0 +1,9 @@
+app: pkuphysu-wechat
+stage: ${env:STAGE}
+component: vpc # (required) name of the component. In that case, it's vpc.
+name: pkuphysu-wechat-vpc # (required) name of your vpc component instance.
+inputs:
+  region: ap-shanghai
+  zone: ap-shanghai-2
+  vpcName: serverless
+  subnetName: serverless

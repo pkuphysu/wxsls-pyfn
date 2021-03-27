@@ -1,6 +1,6 @@
 # 北京大学物院学生会微信公众号后台（回复核心）
 
-使用腾讯云的云开发（cloudbase）加 PostgreSQL ServerlessDB
+使用腾讯云的 Serverless Framework
 
 ## 为什么不……
 
@@ -50,22 +50,6 @@ TOKEN = "token"
 MASTER_IDS = ["<your open id>"]
 ```
 
-
-### `releaser` 脚本的使用
-
-打包代码，用于上传至云函数代码
-```sh
-poetry run releaser -c
-```
-打包依赖库，用于上传至云函数的层。注意必须在 3.6 的 Linux 环境中进行，以保证和云端环境一致。
-```sh
-poetry run releaser -d
-```
-打包代码和依赖库，用于上传至云函数代码（包含依赖库的方案）
-```sh
-poetry run releaser -cd
-```
-
 ### 本地运行
 
 可以跑测试
@@ -81,10 +65,13 @@ poetry run flask run
 ngrok http 5000
 ```
 
+### 发布
+
+发布部分逻辑已写进 GitHub Actions
 
 ## TODO
 
 - [ ] 定时任务的实现（类似 web-cron）
 - [ ] 对活动代码的集成（等有活动了再说）
-- [ ] 一键部署的方案（研究一下 `@cloudbase/cli` 的实现方式）
+- [X] 一键部署的方案
 - [ ] （管理向）腾讯云集体账号管理

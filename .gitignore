@@ -3,5 +3,7 @@ __pycache__/
 .mypy_cache/
 .vscode/
 
+.env
+
 .python-version
 release*.zip

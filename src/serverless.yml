@@ -1,0 +1,31 @@
+component: flask
+name: pkuphysu-wechat
+app: pkuphysu-wechat
+stage: ${env:STAGE}
+inputs:
+  src:
+    src: ./
+    exclude:
+      - tests/**
+      - "*.yml"
+      - ".secret*"
+  region: ap-shanghai
+  zone: ap-shanghai-2
+  runtime: Python3.6
+  layers:
+    - name: ${output:${stage}:${app}:pkuphysu-wechat-layer.name}
+      version: ${output:${stage}:${app}:pkuphysu-wechat-layer.version}
+  functionConf:
+    eip: true
+    vpcConfig:
+      vpcId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.vpcId}
+      subnetId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.subnetId}
+    environment:
+      variables:
+        DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://${output:${stage}:${app}:pkuphysu-wechat-db.private.user}:${output:${stage}:${app}:pkuphysu-wechat-db.private.password}@${output:${stage}:${app}:pkuphysu-wechat-db.private.host}/${output:${stage}:${app}:pkuphysu-wechat-db.private.dbname}
+        ENV_FOR_DYNACONF: ${env:DYNACONF_ENV}
+  apigatewayConf:
+    protocols:
+      - http
+      - https
+    environment: release
