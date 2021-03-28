@@ -1,11 +1,10 @@
-name: pre-commit
+name: Lint Code
 
 on:
   pull_request:
   push:
-    paths-ignore:
-      - "**.md"
-      - serverless.yml
+    paths:
+      - "**.py"
 
 jobs:
   pre-commit:

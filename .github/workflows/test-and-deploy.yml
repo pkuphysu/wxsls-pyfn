@@ -1,22 +1,15 @@
-name: Test and gradual deploy serverless
+name: Test and Deploy Serverless
 
 on:
   pull_request:
   push:
     paths-ignore:
       - "**.md"
-      - serverless.yml
-
-env:
-  SERVERLESS_PLATFORM_VENDOR: tencent
-  TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
-  TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
 
 jobs:
   deploy:
     name: test and deploy serverless
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -26,15 +19,15 @@ jobs:
         uses: abatilo/actions-poetry@v2.0.0
         with:
           poetry-version: 1.1.5
-      - name: Install serverless
-        run: sudo npm install -g serverless
       - name: Determine env
         id: env
         run: |
           if [ $GITHUB_REF == 'refs/heads/master' ]; then
+            echo '::set-output name=deploy::true'
             echo '::set-output name=stage::prod'
             echo '::set-output name=dynaconf_env::production'
-          else
+          elif [ $GITHUB_REF == 'refs/heads/dev' ]; then
+            echo '::set-output name=deploy::true'
             echo '::set-output name=stage::dev'
             echo '::set-output name=dynaconf_env::development'
           fi
@@ -53,27 +46,37 @@ jobs:
             poetry-cache-v1-
       - name: Install and update layer
         if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          poetry install --no-root
-          sls deploy --target layer
-        env:
-          LAYER_SRC: ${{ steps.poetry-path.outputs.lib-dir }}
-          STAGE: ${{ steps.env.outputs.stage }}
+        run: poetry install --no-root
       - name: Run test
         run: poetry run pytest
+
       - name: Dump secrets
+        if: steps.env.outputs.deploy
         run: echo $SECRETS | base64 --decode > src/pkuphysu_wechat/config/.secrets.toml
         env:
           SECRETS: ${{ secrets.SECRET_SETTING }}
+      - name: Install serverless
+        if: steps.env.outputs.deploy
+        run: curl -o- -L https://slss.io/install | bash
+
       - name: Deploy serverless
-        run: |
-          output=`sls deploy --target src | grep -v -e Initializing -e Uploading -e Deploying -e NA | tee /dev/stderr`
-          if [[ $output =~ '请检查该实例是否创建成功' ||  $output =~ 'was not found' ]]; then
-            sls deploy | grep -v -e Initializing -e Uploading -e Deploying -e NA # Retry deploying all components
-          elif [[ $output =~ '帮助文档' ]]; then # Unknown error
-            exit 2
-          fi
+        if: steps.env.outputs.deploy && steps.cache.outputs.cache-hit != 'true'
+        timeout-minutes: 25
+        run: $HOME/.serverless/bin/sls deploy | grep -v -e Initializing -e Uploading -e Deploying -e NA -e password
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           LAYER_SRC: ${{ steps.poetry-path.outputs.lib-dir }}
           DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env}}
+          SERVERLESS_PLATFORM_VENDOR: tencent
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+      - name: Deploy serverless code
+        if: steps.env.outputs.deploy && steps.cache.outputs.cache-hit == 'true'
+        timeout-minutes: 5
+        run: $HOME/.serverless/bin/sls deploy --target src | grep -v -e Initializing -e Uploading -e Deploying -e NA -e password
+        env:
+          STAGE: ${{ steps.env.outputs.stage }}
+          DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env}}
+          SERVERLESS_PLATFORM_VENDOR: tencent
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
