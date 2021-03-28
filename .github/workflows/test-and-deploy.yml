@@ -67,9 +67,9 @@ jobs:
           SECRETS: ${{ secrets.SECRET_SETTING }}
       - name: Deploy serverless
         run: |
-          output=`sls deploy --target src | tee /dev/stderr`
+          output=`sls deploy --target src | grep -v -e Initializing -e Uploading -e Deploying -e NA | tee /dev/stderr`
           if [[ $output =~ '请检查该实例是否创建成功' ||  $output =~ 'was not found' ]]; then
-            sls deploy # Retry deploying all components
+            sls deploy | grep -v -e Initializing -e Uploading -e Deploying -e NA # Retry deploying all components
           elif [[ $output =~ '帮助文档' ]]; then # Unknown error
             exit 2
           fi
