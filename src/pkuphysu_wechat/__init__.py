@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from .config import settings
@@ -18,13 +18,5 @@ def create_app():
     app.register_blueprint(tasks.bp)
 
     db.create_all(app=app)
-
-    @app.route("/echo", methods=["POST", "GET"])
-    def echo():
-        response = request.args.get("q")
-        if not response:
-            print(request.form)
-            response = request.form.get("q", "NA")
-        return response
 
     return app
