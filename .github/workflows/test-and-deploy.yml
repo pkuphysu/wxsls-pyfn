@@ -21,6 +21,7 @@ jobs:
           poetry-version: 1.1.5
       - name: Determine env
         id: env
+        if: ${{ ! contains(github.event.head_commit.message, '[skip-deploy]') }}
         run: |
           if [ $GITHUB_REF == 'refs/heads/master' ]; then
             echo '::set-output name=deploy::true'
@@ -62,7 +63,7 @@ jobs:
       - name: Deploy serverless
         if: steps.env.outputs.deploy && steps.cache.outputs.cache-hit != 'true'
         timeout-minutes: 25
-        run: $HOME/.serverless/bin/sls deploy | grep -v -e Initializing -e Uploading -e Deploying -e NA -e password
+        run: $HOME/.serverless/bin/sls deploy | grep -v -e Initializing -e Uploading -e Deploying -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           LAYER_SRC: ${{ steps.poetry-path.outputs.lib-dir }}
@@ -73,7 +74,7 @@ jobs:
       - name: Deploy serverless code
         if: steps.env.outputs.deploy && steps.cache.outputs.cache-hit == 'true'
         timeout-minutes: 5
-        run: $HOME/.serverless/bin/sls deploy --target src | grep -v -e Initializing -e Uploading -e Deploying -e NA -e password
+        run: $HOME/.serverless/bin/sls deploy --target src | grep -v -e Initializing -e Uploading -e Deploying -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env}}
