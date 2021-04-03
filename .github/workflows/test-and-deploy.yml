@@ -45,7 +45,7 @@ jobs:
           key: poetry-${{ steps.env.outputs.stage }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
             poetry-${{ steps.env.outputs.stage }}-
-      - name: Install and update layer
+      - name: Install pacakges
         if: steps.cache.outputs.cache-hit != 'true'
         run: poetry install --no-root
       - name: Run test

@@ -48,6 +48,21 @@ class WechatClient(Client):
     def get_access_token(self):
         return AccessToken.get(self.grant_token)
 
+    def oauth(self, code: str):
+        """
+        获取 OAuth Access Token。
+        :return: 返回的 JSON 数据包
+        """
+        return self.get(
+            url="https://api.weixin.qq.com/sns/oauth2/access_token",
+            params={
+                "grant_type": "authorization_code",
+                "appid": self.appid,
+                "secret": self.appsecret,
+                "code": code,
+            },
+        )
+
 
 wechat_robot = werobot.WeRoBot(
     token=settings.wechat.TOKEN, logger=logging.getLogger(__name__)
