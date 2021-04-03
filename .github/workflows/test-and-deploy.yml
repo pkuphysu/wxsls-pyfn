@@ -42,9 +42,9 @@ jobs:
         id: cache
         with:
           path: ${{ steps.poetry-path.outputs.cache-dir }}
-          key: poetry-cache-v1-${{ hashFiles('poetry.lock') }}
+          key: poetry-${{ steps.env.outputs.stage }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            poetry-cache-v1-
+            poetry-${{ steps.env.outputs.stage }}-
       - name: Install and update layer
         if: steps.cache.outputs.cache-hit != 'true'
         run: poetry install --no-root
