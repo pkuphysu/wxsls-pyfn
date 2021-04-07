@@ -62,8 +62,8 @@ jobs:
 
       - name: Deploy serverless
         if: steps.env.outputs.deploy && steps.cache.outputs.cache-hit != 'true'
-        timeout-minutes: 25
-        run: $HOME/.serverless/bin/sls deploy | grep -v -e Initializing -e Uploading -e Deploying -e NA
+        timeout-minutes: 10
+        run: $HOME/.serverless/bin/sls deploy | grep -v -e '中 ' -e 'ing ' -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           LAYER_SRC: ${{ steps.poetry-path.outputs.lib-dir }}
@@ -74,7 +74,7 @@ jobs:
       - name: Deploy serverless code
         if: steps.env.outputs.deploy && steps.cache.outputs.cache-hit == 'true'
         timeout-minutes: 5
-        run: $HOME/.serverless/bin/sls deploy --target src | grep -v -e Initializing -e Uploading -e Deploying -e NA
+        run: $HOME/.serverless/bin/sls deploy --target src | grep -v -e '中 ' -e 'ing ' -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env}}
