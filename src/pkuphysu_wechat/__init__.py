@@ -14,10 +14,11 @@ def create_app():
     JWTManager(app)
     db.init_app(app)
 
-    from . import tasks, wechat
+    from . import auth, tasks, wechat
 
     app.register_blueprint(wechat.bp)
     app.register_blueprint(tasks.bp)
+    app.register_blueprint(auth.bp)
 
     db.create_all(app=app)
 
