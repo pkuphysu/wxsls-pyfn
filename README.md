@@ -1,6 +1,9 @@
 # 北京大学物院学生会微信公众号后台（回复核心）
 
-使用腾讯云的 Serverless Framework
+使用腾讯云的 Serverless Framework. See Also:
+
+- [wxsls-page](https://github.com/pkuphysu/wxsls-page) 零碎网页
+- [wxsls-base](https://github.com/pkuphysu/wxsls-base) 基本组件
 
 ## 为什么不……
 
@@ -39,6 +42,9 @@ CREATE DATABASE wechat WITH ENCODING 'UTF8'
 参考以下模板，基本与 `settings.toml` 一致
 
 ```toml
+[default]
+TASK_AUTH_TOKEN = "liyanjieqing"
+
 [default.flask]
 dynaconf_merge = true
 SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://user:password@localhost/wechat"
@@ -74,4 +80,4 @@ ngrok http 5000
 - [ ] 定时任务的实现（类似 web-cron）
 - [ ] 对活动代码的集成（等有活动了再说）
 - [X] 一键部署的方案
-- [ ] （管理向）腾讯云集体账号管理
+- [X] （管理向）腾讯云集体账号管理
