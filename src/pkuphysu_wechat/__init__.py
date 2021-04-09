@@ -20,6 +20,4 @@ def create_app():
     app.register_blueprint(tasks.bp)
     app.register_blueprint(auth.bp)
 
-    db.create_all(app=app)
-
     return app
