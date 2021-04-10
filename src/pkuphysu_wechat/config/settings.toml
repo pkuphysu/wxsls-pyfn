@@ -1,9 +1,10 @@
 [default]
 TASK_AUTH_TOKEN = ""
+TCODE_EXPIRY = 300
+TOKEN_EXPIRY = 3000000
 
 [default.flask]
 SECRET_KEY = "7onlVsgKlQKv85RLLTw6-g"
-JWT_SECRET_KEY = "Change this!"
 TESTING = false
 SQLALCHEMY_TRACK_MODIFICATIONS = false
 SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://user:password@localhost/wechat"

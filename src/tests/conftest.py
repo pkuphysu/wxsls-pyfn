@@ -1,15 +1,15 @@
 import pytest
 
-from pkuphysu_wechat import create_app
+from pkuphysu_wechat import create_app, db
 
 
 @pytest.fixture(scope="class")
-def app():
+def client():
     app = create_app()
-    yield app
-
-
-@pytest.fixture(scope="class")
-def client(app):
-    with app.test_client() as client:
-        yield client
+    with app.app_context():
+        db.create_all()
+        db.session.commit()
+        with app.test_client() as client:
+            yield client
+        db.session.close()
+        db.drop_all()

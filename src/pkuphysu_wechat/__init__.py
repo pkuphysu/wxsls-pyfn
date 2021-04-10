@@ -3,8 +3,9 @@ from flask_jwt_extended.jwt_manager import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 
 from .config import settings
+from .utils import CustomBaseQuery, respond_error
 
-db = SQLAlchemy()
+db = SQLAlchemy(query_class=CustomBaseQuery)
 
 
 def create_app():
@@ -19,5 +20,7 @@ def create_app():
     app.register_blueprint(wechat.bp)
     app.register_blueprint(tasks.bp)
     app.register_blueprint(auth.bp)
+
+    app.errorhandler(500)(lambda: respond_error(500, "UnkownError"))
 
     return app
