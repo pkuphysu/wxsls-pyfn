@@ -1,5 +1,7 @@
 from types import SimpleNamespace
 
+from werobot.client import ClientException
+
 from pkuphysu_wechat.wechat import wechat_client
 
 
@@ -18,7 +20,10 @@ def test_code_correct(client, monkeypatch):
 
 
 def test_code_wrong(client, monkeypatch):
-    monkeypatch.setattr(wechat_client, "oauth", lambda _: {"errmsg": "tencent sucks"})
+    def mock_oauth(_):
+        raise ClientException("hahaha")
+
+    monkeypatch.setattr(wechat_client, "oauth", mock_oauth)
     rv = client.get("/auth/wechat?code=233333")
     assert rv.json.get("errid") == "AuthBadCode"
 

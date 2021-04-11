@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from flask import request
+from werobot.client import ClientException
 
 from pkuphysu_wechat.auth.database import TokenCode, UserToken
 from pkuphysu_wechat.config import settings
@@ -18,11 +19,11 @@ def auth():
     code = request.args.get("code")
     if not code:
         return respond_error(400, "AuthNoCode")
-    oauth_response = wechat_client.oauth(code)
-    oauth_errmsg = oauth_response.get("errmsg")
-    if oauth_errmsg:
-        logger.info("Bad auth code %s: %s", code, oauth_errmsg)
-        return respond_error(400, "AuthBadCode", oauth_errmsg)
+    try:
+        oauth_response = wechat_client.oauth(code)
+    except ClientException as e:
+        logger.info("Bad auth code %s: %s", code, e.args[0])
+        return respond_error(400, "AuthBadCode", e.args[0])
     openid = oauth_response.get("openid")
     if not openid:
         logger.error(
