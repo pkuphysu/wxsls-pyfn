@@ -21,6 +21,6 @@ def create_app():
     app.register_blueprint(tasks.bp)
     app.register_blueprint(auth.bp)
 
-    app.errorhandler(500)(lambda: respond_error(500, "UnkownError"))
+    app.errorhandler(500)(lambda e: respond_error(500, "UnkownError", e.description))
 
     return app
