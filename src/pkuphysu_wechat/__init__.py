@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_jwt_extended.jwt_manager import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 
 from .config import settings
@@ -12,7 +11,6 @@ def create_app():
     app = Flask(__name__)
     app.config.update(settings.flask)
 
-    JWTManager(app)
     db.init_app(app)
 
     from . import auth, tasks, wechat
