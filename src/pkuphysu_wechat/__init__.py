@@ -13,6 +13,12 @@ def create_app():
 
     db.init_app(app)
 
+    if not settings.PRODUCTION:
+        from flask_cors import CORS
+
+        print(settings.PRODUCTION)
+        CORS(app, origins="http://localhost:3000")
+
     from . import api, auth, tasks, wechat
 
     api.init_app(app)

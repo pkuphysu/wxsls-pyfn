@@ -17,3 +17,9 @@ APP_ID = ""
 APP_SECRET = ""
 TOKEN = ""
 MASTER_IDS = ["MASTER"]
+
+[development]
+PRODUCTION = false
+
+[production]
+PRODUCTION = true
