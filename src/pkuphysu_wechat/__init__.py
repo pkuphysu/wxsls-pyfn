@@ -13,11 +13,12 @@ def create_app():
 
     db.init_app(app)
 
-    from . import auth, tasks, wechat
+    from . import api, auth, tasks, wechat
 
-    app.register_blueprint(wechat.bp)
-    app.register_blueprint(tasks.bp)
+    api.init_app(app)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(tasks.bp)
+    app.register_blueprint(wechat.bp)
 
     app.errorhandler(500)(lambda e: respond_error(500, "UnkownError", e.description))
 
