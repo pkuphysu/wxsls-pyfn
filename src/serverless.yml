@@ -29,3 +29,4 @@ inputs:
       - http
       - https
     environment: release
+    enableCORS: true

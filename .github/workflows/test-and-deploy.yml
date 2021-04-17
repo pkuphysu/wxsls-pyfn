@@ -10,6 +10,21 @@ jobs:
   deploy:
     name: test and deploy serverless
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: wechat
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -42,10 +57,10 @@ jobs:
         id: cache
         with:
           path: ${{ steps.poetry-path.outputs.cache-dir }}
-          key: poetry-cache-v1-${{ hashFiles('poetry.lock') }}
+          key: poetry-${{ steps.env.outputs.stage }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
-            poetry-cache-v1-
-      - name: Install and update layer
+            poetry-${{ steps.env.outputs.stage }}-
+      - name: Install pacakges
         if: steps.cache.outputs.cache-hit != 'true'
         run: poetry install --no-root
       - name: Run test
@@ -62,8 +77,8 @@ jobs:
 
       - name: Deploy serverless
         if: steps.env.outputs.deploy && steps.cache.outputs.cache-hit != 'true'
-        timeout-minutes: 25
-        run: $HOME/.serverless/bin/sls deploy | grep -v -e Initializing -e Uploading -e Deploying -e NA
+        timeout-minutes: 10
+        run: $HOME/.serverless/bin/sls deploy | grep -v -e '中 ' -e 'ing ' -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           LAYER_SRC: ${{ steps.poetry-path.outputs.lib-dir }}
@@ -74,7 +89,7 @@ jobs:
       - name: Deploy serverless code
         if: steps.env.outputs.deploy && steps.cache.outputs.cache-hit == 'true'
         timeout-minutes: 5
-        run: $HOME/.serverless/bin/sls deploy --target src | grep -v -e Initializing -e Uploading -e Deploying -e NA
+        run: $HOME/.serverless/bin/sls deploy --target src | grep -v -e '中 ' -e 'ing ' -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env}}

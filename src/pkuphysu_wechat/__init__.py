@@ -2,8 +2,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from .config import settings
+from .utils import CustomBaseQuery, respond_error
 
-db = SQLAlchemy()
+db = SQLAlchemy(query_class=CustomBaseQuery)
 
 
 def create_app():
@@ -12,11 +13,19 @@ def create_app():
 
     db.init_app(app)
 
-    from . import tasks, wechat
+    if not settings.PRODUCTION:
+        from flask_cors import CORS
 
-    app.register_blueprint(wechat.bp)
+        print(settings.PRODUCTION)
+        CORS(app, origins="http://localhost:3000")
+
+    from . import api, auth, tasks, wechat
+
+    api.init_app(app)
+    app.register_blueprint(auth.bp)
     app.register_blueprint(tasks.bp)
+    app.register_blueprint(wechat.bp)
 
-    db.create_all(app=app)
+    app.errorhandler(500)(lambda e: respond_error(500, "UnkownError", e.description))
 
     return app
