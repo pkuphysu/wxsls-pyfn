@@ -49,7 +49,7 @@ Returns:
 
 注意如果参加一次没答完就退出，算参加过没成绩，故 `played` 为 `true` 不代表有 `result`
 
-### `POST /api/x10n?id=123456789`
+### `POST /api/x10n`
 
 Body:
 ```js
