@@ -11,7 +11,7 @@ from .database import RandomDraw
 @bp.route("/join", methods=["POST"])
 def join():
     openid = token_required()
-    name = request.form.get("name")
+    name = request.json.get("name")
     if not name:
         return respond_error(400, "DrawNameRequired")
     if RandomDraw.add_participant(openid, name):
