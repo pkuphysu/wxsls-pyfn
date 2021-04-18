@@ -63,3 +63,8 @@ def exchange_token():
     if not token:
         return respond_error(404, "ExchangeNoToken")
     return respond_success(token=token)
+
+
+@bp.route("/openid")
+def get_openid():
+    return respond_success(openid=token_required())
