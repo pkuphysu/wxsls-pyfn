@@ -4,7 +4,7 @@ from command4bot.manager import split_keyword
 from werobot.replies import TransferCustomerServiceReply
 
 from .core import wechat_client, wechat_command_reg, wechat_mgr
-from .database import AutoReply
+from .models import AutoReply
 from .utils import get_similar_help_for_user
 
 

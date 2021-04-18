@@ -6,7 +6,7 @@ from werobot.messages.messages import TextMessage
 from werobot.replies import SuccessReply, TransferCustomerServiceReply
 
 from .core import wechat_client, wechat_mgr, wechat_robot
-from .database import CommandStatus
+from .models import CommandStatus
 
 logger = getLogger(__name__)
 

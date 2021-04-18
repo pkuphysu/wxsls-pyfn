@@ -8,7 +8,7 @@ from werobot.client import Client
 
 from pkuphysu_wechat.config import settings
 
-from .database import AccessToken, CommandStatus
+from .models import AccessToken, CommandStatus
 
 
 class CommandRegistry(command4bot.CommandRegistry):

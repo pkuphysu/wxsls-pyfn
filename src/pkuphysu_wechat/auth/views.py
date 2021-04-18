@@ -1,17 +1,18 @@
 from logging import getLogger
 
-from flask import request
+from flask import Blueprint, request
 from werobot.client import ClientException
 
-from pkuphysu_wechat.auth.database import TokenCode, UserToken
 from pkuphysu_wechat.config import settings
 from pkuphysu_wechat.utils import respond_error, respond_success
 from pkuphysu_wechat.wechat import wechat_client
 
-from . import bp
+from .models import TokenCode, UserToken
 from .utils import token_required
 
 logger = getLogger()
+
+bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @bp.route("/wechat")

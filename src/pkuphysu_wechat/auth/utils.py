@@ -3,7 +3,7 @@ from flask import abort, request
 from pkuphysu_wechat.config import settings
 from pkuphysu_wechat.utils import respond_error
 
-from .database import UserToken
+from .models import UserToken
 
 __all__ = ["token_required"]
 
