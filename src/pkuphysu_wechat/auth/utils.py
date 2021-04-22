@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from flask import abort, request
 
 from pkuphysu_wechat.config import settings
@@ -5,7 +7,8 @@ from pkuphysu_wechat.utils import respond_error
 
 from .models import UserToken
 
-__all__ = ["token_required"]
+__all__ = ["token_required", "master_required"]
+logger = getLogger(__name__)
 
 
 def token_required() -> str:
@@ -24,3 +27,10 @@ def token_required() -> str:
     if not token_record or token_record.expired(settings.TOKEN_EXPIRY):
         abort(respond_error(401, "BadToken"))
     return token_record.openid
+
+
+def master_required():
+    openid = token_required()
+    if openid not in settings.WECHAT.MASTER_IDS:
+        logger.info("%s tried to access admin resouces", openid)
+        abort(respond_error(403, "NoHackMaster"))

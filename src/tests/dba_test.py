@@ -1,6 +1,77 @@
-from pkuphysu_wechat import settings
+# pylint: disable=unused-argument
+from pkuphysu_wechat import db
 
 
-def test_db_create(client):
-    rv = client.get(f"/tasks/db/create?token={settings.TASK_AUTH_TOKEN}")
-    assert b"DB Created" in rv.data
+def test_dba_get_info(client, master_access):
+    global NewTable  # pylint: disable=invalid-name
+    rv = client.open_with_token("/db-tables", method="GET")
+
+    class NewTable(db.Model):
+        # TODO: add DateTime support test with timezone=True
+        index = db.Column(db.Integer(), primary_key=True)
+        content = db.Column(db.String(32))
+
+    rv = client.open_with_token("/db-tables", method="GET")
+    assert rv.json["status"] == 200
+    assert len(rv.json["tables"])
+    assert not rv.json["tables"].pop("new_table")
+    assert all(rv.json["tables"].values())
+
+
+class TestCreate:
+    def test_create(self, client, master_access):
+        rv = client.open_with_token("/db-tables/create-all", method="POST")
+        assert rv.json["status"] == 200
+
+    def test_after_create(self, client, master_access):
+        rv = client.open_with_token("/db-tables", method="GET")
+        assert rv.json["status"] == 200
+        assert len(rv.json["tables"])
+        assert all(rv.json["tables"].values())
+
+
+class TestModify:
+    def test_get_table(self, client, master_access):
+        db.session.add(NewTable(content="Nothing"))
+        db.session.commit()
+        rv = client.open_with_token("/db-tables/new_table", method="GET")
+        rv = client.open_with_token("/db-tables/new_table", method="GET")
+        assert rv.json["status"] == 200
+        assert len(rv.json["data"]) == 1
+        assert rv.json["data"][0] == dict(index=1, content="Nothing")
+
+    def test_patch(self, client, master_access):
+        rv = client.open_with_token(
+            "/db-tables/new_table",
+            method="PATCH",
+            json=dict(data=[dict(index=3, content="test")]),
+        )
+        assert rv.json["status"] == 200
+        assert rv.json["rows"] == 1
+
+    def test_patch_result(self, client, master_access):
+        rv = client.open_with_token("/db-tables/new_table", method="GET")
+        assert rv.json["count"] == 2
+        assert rv.json["data"][-1] == dict(index=3, content="test")
+
+    def test_put(self, client, master_access):
+        rv = client.open_with_token(
+            "/db-tables/new_table",
+            method="PUT",
+            json=dict(data=[dict(index=5, content="tester")]),
+        )
+        assert rv.json["status"] == 200
+        assert rv.json["rows"] == 1
+
+    def test_put_result(self, client, master_access):
+        rv = client.open_with_token("/db-tables/new_table", method="GET")
+        assert rv.json["count"] == 1
+        assert rv.json["data"][0] == dict(index=5, content="tester")
+
+    def test_delete(self, client, master_access):
+        rv = client.open_with_token("/db-tables/new_table", method="DELETE")
+        assert rv.json["status"] == 200
+
+    def test_delete_result(self, client, master_access):
+        rv = client.open_with_token("/db-tables/new_table", method="GET")
+        assert rv.json["count"] == 0
