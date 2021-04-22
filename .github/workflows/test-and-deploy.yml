@@ -60,9 +60,12 @@ jobs:
           key: poetry-${{ steps.env.outputs.stage }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
             poetry-${{ steps.env.outputs.stage }}-
-      - name: Install pacakges
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: poetry install --no-root
+      - name: Check Venv And Install Requirements
+        shell: bash
+        run: |
+          poetry run python -c 'import pytest' || \
+          ( poetry install --no-root && poetry run python -c 'import pytest' ) || \
+          ( poetry env remove python && poetry install --no-root && poetry run python -c 'import pytest' )
       - name: Run test
         run: poetry run pytest
 
