@@ -5,6 +5,7 @@ from typing import Callable
 from flask import Blueprint, abort, request
 
 from pkuphysu_wechat.config import settings
+from pkuphysu_wechat import db
 from pkuphysu_wechat.wechat import wechat_client
 
 bp = Blueprint("tasks", __name__, url_prefix="/tasks")
@@ -29,3 +30,11 @@ def menu():
         menu_data = f.read()
     wechat_client.create_menu(menu_data)
     return "Menu Updated"
+
+
+@bp.route("/db/create")
+@auth_required
+def db_create():
+    db.create_all()
+    return "DB Created"
+
