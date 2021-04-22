@@ -20,6 +20,7 @@ psycopg2_binary = "^2.8.6"
 flask-sqlalchemy = "^2.5.1"
 isort = { version = "^5.8.0", extras = ["toml"] }
 flask-cors = "^3.0.10"
+requests = "^2.25.1"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"

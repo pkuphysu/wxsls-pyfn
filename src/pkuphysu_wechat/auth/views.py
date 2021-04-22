@@ -1,5 +1,6 @@
 from logging import getLogger
 
+import requests
 from flask import Blueprint, request
 from werobot.client import ClientException
 
@@ -7,7 +8,7 @@ from pkuphysu_wechat.config import settings
 from pkuphysu_wechat.utils import respond_error, respond_success
 from pkuphysu_wechat.wechat import wechat_client
 
-from .models import TokenCode, UserToken
+from .models import TokenCode, User, UserToken
 from .utils import token_required
 
 logger = getLogger()
@@ -26,11 +27,15 @@ def auth():
         logger.info("Bad auth code %s: %s", code, e.args[0])
         return respond_error(400, "AuthBadCode", e.args[0])
     openid = oauth_response.get("openid")
-    if not openid:
-        logger.error(
-            "Cannot find openid in %s, even no error given", str(oauth_response)
-        )
+    scope = oauth_response.get("scope")
+    access_token = oauth_response.get("access_token")
+    if openid is None or scope is None or access_token is None:
+        logger.error("Tencent bad response: %s", str(oauth_response))
         return respond_error(503, "AuthTencentSucks")
+    if scope == "snsapi_userinfo":
+        userinfo = wechat_client.oauth_userinfo(access_token, openid)
+        avatar = requests.get(userinfo["headimgurl"]).content
+        User(openid=openid, nickname=userinfo["nickname"], avatar=avatar).update()
     return respond_success(token=UserToken.create(openid))
 
 
