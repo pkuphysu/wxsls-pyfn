@@ -4,8 +4,8 @@ from typing import Callable
 
 from flask import Blueprint, abort, request
 
-from pkuphysu_wechat.config import settings
 from pkuphysu_wechat import db
+from pkuphysu_wechat.config import settings
 from pkuphysu_wechat.wechat import wechat_client
 
 bp = Blueprint("tasks", __name__, url_prefix="/tasks")
@@ -37,4 +37,3 @@ def menu():
 def db_create():
     db.create_all()
     return "DB Created"
-
