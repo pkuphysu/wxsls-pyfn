@@ -2,7 +2,7 @@
 from pkuphysu_wechat import db
 
 
-def test_dba_get_info(client, master_access):
+def test_get_info(client, master_access):
     global NewTable  # pylint: disable=invalid-name
     rv = client.open_with_token("/db-tables", method="GET")
 
@@ -14,8 +14,8 @@ def test_dba_get_info(client, master_access):
     rv = client.open_with_token("/db-tables", method="GET")
     assert rv.json["status"] == 200
     assert len(rv.json["tables"])
-    assert not rv.json["tables"].pop("new_table")
-    assert all(rv.json["tables"].values())
+    assert not rv.json["tables"].pop("new_table")["exists"]
+    assert all(info["exists"] for info in rv.json["tables"].values())
 
 
 class TestCreate:
@@ -27,7 +27,7 @@ class TestCreate:
         rv = client.open_with_token("/db-tables", method="GET")
         assert rv.json["status"] == 200
         assert len(rv.json["tables"])
-        assert all(rv.json["tables"].values())
+        assert all(info["exists"] for info in rv.json["tables"].values())
 
 
 class TestModify:
@@ -35,10 +35,14 @@ class TestModify:
         db.session.add(NewTable(content="Nothing"))
         db.session.commit()
         rv = client.open_with_token("/db-tables/new_table", method="GET")
-        rv = client.open_with_token("/db-tables/new_table", method="GET")
         assert rv.json["status"] == 200
         assert len(rv.json["data"]) == 1
         assert rv.json["data"][0] == dict(index=1, content="Nothing")
+
+    def test_info_rows(self, client, master_access):
+        rv = client.open_with_token("/db-tables", method="GET")
+        assert rv.json["status"] == 200
+        assert rv.json["tables"].pop("new_table")["rows"] == 1
 
     def test_patch(self, client, master_access):
         rv = client.open_with_token(

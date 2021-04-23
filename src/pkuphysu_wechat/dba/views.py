@@ -23,9 +23,15 @@ def create_all():
 
 @bp.route("/db-tables", methods=["GET"])
 def index():
-    tables = db.Model.metadata.tables.keys()
     inspector = inspect(db.engine)
-    return respond_success(tables={name: inspector.has_table(name) for name in tables})
+    tables_info = dict()
+    for table_name, table in db.Model.metadata.tables.items():
+        table_exists = inspector.has_table(table_name)
+        table_rows = 0
+        if table_exists:
+            table_rows = db.session.query(table).count()
+        tables_info[table_name] = dict(exists=table_exists, rows=table_rows)
+    return respond_success(tables=tables_info)
 
 
 @bp.route("/db-tables/<table_name>", methods=["GET", "DELETE", "PUT", "PATCH"])
