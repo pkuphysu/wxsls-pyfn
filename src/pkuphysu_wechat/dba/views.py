@@ -5,11 +5,11 @@ from sqlalchemy import inspect
 from sqlalchemy.sql.expression import insert
 
 from pkuphysu_wechat import db
-from pkuphysu_wechat.auth.utils import master_required
+from pkuphysu_wechat.auth.utils import master_before_request
 from pkuphysu_wechat.utils import respond_error, respond_success
 
 bp = Blueprint("dba", __name__)
-bp.before_request(master_required)
+bp.before_request(master_before_request)
 
 logger = getLogger(__name__)
 

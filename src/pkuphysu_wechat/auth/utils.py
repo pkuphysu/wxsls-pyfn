@@ -34,3 +34,8 @@ def master_required():
     if openid not in settings.WECHAT.MASTER_IDS:
         logger.info("%s tried to access admin resouces", openid)
         abort(respond_error(403, "NoHackMaster"))
+
+
+def master_before_request():
+    if request.method != "OPTIONS":
+        master_required()
