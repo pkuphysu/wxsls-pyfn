@@ -11,7 +11,7 @@ def test_code_correct(client, monkeypatch):
 
     def mock_oauth(*_):
         data.called += 1
-        return {"openid": "OPENID"}
+        return {"openid": "OPENID", "scope": "", "access_token": ""}
 
     monkeypatch.setattr(wechat_client, "oauth", mock_oauth)
     rv = client.get("/auth/wechat?code=233333")

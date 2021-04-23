@@ -52,6 +52,13 @@ jobs:
         run: |
           echo "::set-output name=cache-dir::$(poetry config cache-dir)"
           poetry run python -c "from distutils.sysconfig import get_python_lib;print('::set-output name=lib-dir::' + get_python_lib())"
+      - name: Overwrite mirror
+        run: |
+          sed -i "s/${origin_pypi_url}/${new_pypi_url}/g" poetry.lock
+          sed -i "s/${origin_pypi_url}/${new_pypi_url}/g" pyproject.toml
+        env:
+          origin_pypi_url: pypi.tuna.tsinghua.edu.cn
+          new_pypi_url: pypi.org
       - name: Cache Poetry
         uses: actions/cache@v2.1.4
         id: cache
