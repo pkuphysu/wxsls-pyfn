@@ -1,24 +1,26 @@
 # pylint: disable=unused-argument
+import pytest
+
 from pkuphysu_wechat import db
 
 
-def test_get_info(client, master_access):
-    global NewTable  # pylint: disable=invalid-name
-    rv = client.open_with_token("/db-tables", method="GET")
+@pytest.mark.incremental
+class TestProcess:
+    def test_get_info(client, master_access):
+        global NewTable  # pylint: disable=invalid-name
+        rv = client.open_with_token("/db-tables", method="GET")
 
-    class NewTable(db.Model):
-        # TODO: add DateTime support test with timezone=True
-        index = db.Column(db.Integer(), primary_key=True)
-        content = db.Column(db.String(32))
+        class NewTable(db.Model):
+            # TODO: add DateTime support test with timezone=True
+            index = db.Column(db.Integer(), primary_key=True)
+            content = db.Column(db.String(32))
 
-    rv = client.open_with_token("/db-tables", method="GET")
-    assert rv.json["status"] == 200
-    assert len(rv.json["tables"])
-    assert not rv.json["tables"].pop("new_table")["exists"]
-    assert all(info["exists"] for info in rv.json["tables"].values())
+        rv = client.open_with_token("/db-tables", method="GET")
+        assert rv.json["status"] == 200
+        assert len(rv.json["tables"])
+        assert not rv.json["tables"].pop("new_table")["exists"]
+        assert all(info["exists"] for info in rv.json["tables"].values())
 
-
-class TestCreate:
     def test_create(self, client, master_access):
         rv = client.open_with_token("/db-tables/create-all", method="POST")
         assert rv.json["status"] == 200
@@ -29,8 +31,6 @@ class TestCreate:
         assert len(rv.json["tables"])
         assert all(info["exists"] for info in rv.json["tables"].values())
 
-
-class TestModify:
     def test_get_table(self, client, master_access):
         db.session.add(NewTable(content="Nothing"))
         db.session.commit()
@@ -80,8 +80,6 @@ class TestModify:
         rv = client.open_with_token("/db-tables/new_table", method="GET")
         assert rv.json["count"] == 0
 
-
-class TestMigration:
     def test_migration_preview(self, client, master_access):
         class BrandNewTable(db.Model):
             __tablename__ = "new_table"
