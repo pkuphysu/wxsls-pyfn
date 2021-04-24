@@ -97,7 +97,7 @@ def migrate():
         logger.info("Invoking %s", outer_op)
         if isinstance(outer_op, OpContainer):
             for inner_op in outer_op.ops:
-                # logger.info("Invoking %s", inner_op)
+                logger.info("Invoking %s", inner_op)
                 operation.invoke(inner_op)
         else:
             operation.invoke(outer_op)
