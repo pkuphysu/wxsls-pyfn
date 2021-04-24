@@ -67,3 +67,36 @@ def manage_table(table_name):
     logger.info("Insert into %s result: %s", table_name, str(result))
     db.session.commit()
     return respond_success(rows=result.rowcount)
+
+
+@bp.route("/db-tables/migrate", methods=["GET", "POST"])
+def migrate():
+    from alembic.runtime.migration import MigrationContext
+
+    context = MigrationContext.configure(db.engine.connect())
+
+    if request.method == "GET":
+        import pprint
+
+        from alembic.autogenerate import compare_metadata
+
+        diff = compare_metadata(context, db.metadata)
+        diff_str = pprint.pformat(diff, indent=2, width=20)
+        logger.info("Migrate steps: %s", diff_str)
+        return respond_success(migration=diff_str)
+
+    from alembic.autogenerate import produce_migrations
+    from alembic.operations import Operations
+    from alembic.operations.ops import OpContainer
+
+    migration = produce_migrations(context, db.metadata)
+    opertaion = Operations(context)
+    for outer_op in migration.upgrade_ops.ops:
+        logger.info("Invoking %s", outer_op)
+        if isinstance(outer_op, OpContainer):
+            for inner_op in outer_op.ops:
+                logger.info("Invoking %s", inner_op)
+                opertaion.invoke(inner_op)
+        else:
+            opertaion.invoke(outer_op)
+    return respond_success()

@@ -79,3 +79,25 @@ class TestModify:
     def test_delete_result(self, client, master_access):
         rv = client.open_with_token("/db-tables/new_table", method="GET")
         assert rv.json["count"] == 0
+
+
+class TestMigration:
+    def test_migration_preview(self, client, master_access):
+        class BrandNewTable(db.Model):
+            __tablename__ = "new_table"
+            __table_args__ = dict(extend_existing=True)
+            index = db.Column(db.Integer(), primary_key=True)
+            data = db.Column(db.String(32))
+
+        rv = client.open_with_token("/db-tables/migrate", method="GET")
+        assert rv.json["status"] == 200
+        assert "add_column" in rv.json["migration"]
+
+    def test_migration(self, client, master_access):
+        rv = client.open_with_token("/db-tables/migrate", method="POST")
+        assert rv.json["status"] == 200
+
+    def test_migration_done(self, client, master_access):
+        rv = client.open_with_token("/db-tables/migrate", method="GET")
+        assert rv.json["status"] == 200
+        assert rv.json["migration"] == "[]"
