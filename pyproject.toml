@@ -38,6 +38,9 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 addopts = "-v"
 log_level = "INFO"
+markers = """
+    incremental: Incremental Test
+"""
 
 [tool.isort]
 multi_line_output = 3
