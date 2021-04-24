@@ -70,9 +70,12 @@ jobs:
       - name: Check Venv And Install Requirements
         shell: bash
         run: |
+          if [ $HIT != 'true' ]; then poetry install --no-root; fi
           poetry run python -c 'import pytest' || \
           ( poetry install --no-root && poetry run python -c 'import pytest' ) || \
           ( poetry env remove python && poetry install --no-root && poetry run python -c 'import pytest' )
+        env:
+          HIT: ${{ steps.cache.outputs.cache-hit }}
       - name: Run test
         run: poetry run pytest
 
