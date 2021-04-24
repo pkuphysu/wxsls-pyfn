@@ -73,7 +73,9 @@ def manage_table(table_name):
 def migrate():
     from alembic.runtime.migration import MigrationContext
 
-    context = MigrationContext.configure(db.engine.connect())
+    # use `db.session.connection()` instead of `db.engine.connect()`
+    # to avoid lock hang
+    context = MigrationContext.configure(db.session.connection())
 
     if request.method == "GET":
         import pprint
@@ -90,13 +92,13 @@ def migrate():
     from alembic.operations.ops import OpContainer
 
     migration = produce_migrations(context, db.metadata)
-    opertaion = Operations(context)
+    operation = Operations(context)
     for outer_op in migration.upgrade_ops.ops:
         logger.info("Invoking %s", outer_op)
         if isinstance(outer_op, OpContainer):
             for inner_op in outer_op.ops:
-                logger.info("Invoking %s", inner_op)
-                opertaion.invoke(inner_op)
+                # logger.info("Invoking %s", inner_op)
+                operation.invoke(inner_op)
         else:
-            opertaion.invoke(outer_op)
+            operation.invoke(outer_op)
     return respond_success()
