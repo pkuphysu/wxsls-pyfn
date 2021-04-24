@@ -6,7 +6,7 @@ from pkuphysu_wechat import db
 
 @pytest.mark.incremental
 class TestProcess:
-    def test_get_info(client, master_access):
+    def test_get_info(self, client, master_access):
         global NewTable  # pylint: disable=invalid-name
         rv = client.open_with_token("/db-tables", method="GET")
 
