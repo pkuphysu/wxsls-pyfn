@@ -19,10 +19,11 @@ def create_app():
         print(settings.PRODUCTION)
         CORS(app, origins="http://localhost:3000")
 
-    from . import api, auth, tasks, wechat
+    from . import api, auth, dba, tasks, wechat
 
     api.init_app(app)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(dba.bp)
     app.register_blueprint(tasks.bp)
     app.register_blueprint(wechat.bp)
 

@@ -11,7 +11,7 @@ from pkuphysu_wechat.wechat import wechat_client
 from .models import TokenCode, User, UserToken
 from .utils import token_required
 
-logger = getLogger()
+logger = getLogger(__name__)
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
