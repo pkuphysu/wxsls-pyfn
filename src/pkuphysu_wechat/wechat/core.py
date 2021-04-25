@@ -8,7 +8,7 @@ from werobot.client import Client
 
 from pkuphysu_wechat.config import settings
 
-from .database import AccessToken, CommandStatus
+from .models import AccessToken, CommandStatus
 
 
 class CommandRegistry(command4bot.CommandRegistry):
@@ -60,6 +60,20 @@ class WechatClient(Client):
                 "appid": self.appid,
                 "secret": self.appsecret,
                 "code": code,
+            },
+        )
+
+    def oauth_userinfo(self, access_token: str, openid: str):
+        """
+        获取用户信息。
+        :return: 返回的 JSON 数据包
+        """
+        return self.get(
+            url="https://api.weixin.qq.com/sns/userinfo",
+            params={
+                "access_token": access_token,
+                "openid": openid,
+                "lang": "zh_CN",
             },
         )
 

@@ -1,11 +1,12 @@
-from flask import abort, request
+from flask import Blueprint, abort, request
 
-from pkuphysu_wechat.auth.utils import token_required
+from pkuphysu_wechat.auth import token_required
 from pkuphysu_wechat.config import settings
 from pkuphysu_wechat.utils import respond_error, respond_success
 
-from . import bp
-from .database import RandomDraw
+from .models import RandomDraw
+
+bp = Blueprint("random_draw", __name__, url_prefix="/api/random-draw")
 
 
 @bp.route("/join", methods=["POST"])

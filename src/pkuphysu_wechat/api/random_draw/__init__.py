@@ -1,5 +1,3 @@
-from flask import Blueprint
+from .views import bp
 
-bp = Blueprint("random_draw", __name__, url_prefix="/api/random-draw")
-
-from . import routes  # noqa
+__all__ = ["bp"]
