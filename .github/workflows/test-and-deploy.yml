@@ -30,10 +30,9 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.6
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.0.0
+      - uses: Gr1N/setup-poetry@v4
         with:
-          poetry-version: 1.1.5
+          poetry-version: 1.1.6
       - name: Determine env
         id: env
         if: ${{ ! contains(github.event.head_commit.message, '[skip-deploy]') }}
@@ -50,26 +49,12 @@ jobs:
       - name: Get poetry paths
         id: poetry-path
         run: |
-          echo "::set-output name=cache-dir::$(poetry config cache-dir)"
           poetry run python -c "from distutils.sysconfig import get_python_lib;print('::set-output name=lib-dir::' + get_python_lib())"
-      - name: Overwrite mirror
-        run: |
-          sed -i "s/${origin_pypi_url}/${new_pypi_url}/g" poetry.lock
-          sed -i "s/${origin_pypi_url}/${new_pypi_url}/g" pyproject.toml
-        env:
-          origin_pypi_url: pypi.tuna.tsinghua.edu.cn
-          new_pypi_url: pypi.org
-      - name: Cache Poetry
-        uses: actions/cache@v2.1.4
+      - uses: allanchain/poetry-cache-action@release
         id: cache
         with:
-          path: ${{ steps.poetry-path.outputs.cache-dir }}
-          key: poetry-${{ steps.env.outputs.stage }}-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            poetry-${{ steps.env.outputs.stage }}-
-      - name: Install pacakges
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: poetry install --no-root
+          replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
+          cache-key-prefix: ${{ steps.env.outputs.stage }}
       - name: Run test
         run: poetry run pytest
 
