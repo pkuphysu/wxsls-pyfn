@@ -33,6 +33,10 @@ class User(db.Model):
     nickname = db.Column(db.String(32))
     avatar = db.Column(BYTEA())
 
+    def update(self):
+        db.session.merge(self)
+        db.session.commit()
+
 
 class UserToken(db.Model):
     __tablename__ = "user_token"

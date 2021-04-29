@@ -71,6 +71,8 @@ poetry run flask run
 ngrok http 5000
 ```
 
+本地运行时可使用 `developmentoken` 作为 token，绕过微信授权。
+
 ### 发布
 
 发布部分逻辑已写进 GitHub Actions

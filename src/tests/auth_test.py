@@ -11,7 +11,7 @@ def test_code_correct(client, monkeypatch):
 
     def mock_oauth(*_):
         data.called += 1
-        return {"openid": "OPENID"}
+        return {"openid": "OPENID", "scope": "", "access_token": ""}
 
     monkeypatch.setattr(wechat_client, "oauth", mock_oauth)
     rv = client.get("/auth/wechat?code=233333")
@@ -28,12 +28,7 @@ def test_code_wrong(client, monkeypatch):
     assert rv.json.get("errid") == "AuthBadCode"
 
 
-def test_auth_exsisting_token(client, monkeypatch):
-    monkeypatch.setattr(wechat_client, "oauth", lambda _: {"openid": "OPENID"})
-    # In wechat
-    rv = client.get("/auth/wechat?code=233333")
-    token = rv.json.get("token")
-    assert token
+def test_auth_exsisting_token(client):
     # In browser
     rv = client.get("/auth/tcode/get")
     tcode = rv.json.get("tcode")
@@ -42,10 +37,19 @@ def test_auth_exsisting_token(client, monkeypatch):
     # In wechat
     rv = client.get(
         f"/auth/tcode/grant?tcode={tcode}",
-        headers=[("Authorization", f"Basic {token}")],
+        headers=[("Authorization", "Basic developmentoken")],
     )
     assert rv.status_code == 200
     # In browser
     rv = client.get(f"/auth/tcode/exchange?tcode={tcode}")
     token = rv.json.get("token")
     assert token
+
+
+def test_dev_token(client):
+    rv = client.get(
+        "/auth/openid",
+        headers=[("Authorization", "Basic developmentoken")],
+    )
+    assert rv.status_code == 200
+    assert rv.json.get("openid") == "developmentopenid"

@@ -3,8 +3,8 @@ import json
 from command4bot.manager import split_keyword
 from werobot.replies import TransferCustomerServiceReply
 
-from .core import wechat_client, wechat_command_reg, wechat_mgr
-from .database import AutoReply
+from .core import wechat_command_reg, wechat_mgr
+from .models import AutoReply
 from .utils import get_similar_help_for_user
 
 
@@ -22,7 +22,6 @@ def help_with_similar(content: str, message) -> str:
             for keyword in command.keywords:
                 if content.startswith(keyword):
                     return f'看起来想使用命令"{keyword}"但忘了在"{keyword}"后打空格？'
-        wechat_client.send_text_message(message.source, "消息已收到，请等待回复哦~")
         return TransferCustomerServiceReply(message)
     # print similar commands
     return f'看起来命令"{keyword}"打错了? 可能的命令有:\n' + helps

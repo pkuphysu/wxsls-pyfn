@@ -5,8 +5,8 @@ from textwrap import dedent
 from werobot.messages.messages import TextMessage
 from werobot.replies import SuccessReply, TransferCustomerServiceReply
 
-from .core import wechat_client, wechat_mgr, wechat_robot
-from .database import CommandStatus
+from .core import wechat_mgr, wechat_robot
+from .models import CommandStatus
 
 logger = getLogger(__name__)
 
@@ -20,7 +20,7 @@ def text_handler(message: TextMessage):
         return dedent(response) if isinstance(response, str) else response
     except:  # noqa
         logger.error(traceback.format_exc())
-        return "抱歉出现了一些问题[OMG]，暂时无法处理[Doge]"
+        return "抱歉回复机器人出现了一些问题[OMG]，暂时无法处理"
 
 
 wechat_robot.text(text_handler)
@@ -37,7 +37,6 @@ def respond_subscribe(message):
 @wechat_robot.voice
 @wechat_robot.unknown
 def respond_image(message):
-    wechat_client.send_text_message(message.source, "暂时没有开发识别功能[Shrunken]，请等待回复哟~")
     return TransferCustomerServiceReply(message)
 
 
