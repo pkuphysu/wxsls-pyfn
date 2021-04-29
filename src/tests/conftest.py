@@ -2,6 +2,7 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from pkuphysu_wechat import create_app, db, settings
+from pkuphysu_wechat.api import modules
 
 from .utils import Client
 
@@ -38,3 +39,10 @@ def pytest_runtest_setup(item):
     previousfailed = getattr(item.parent, "_previousfailed", None)
     if previousfailed is not None:
         pytest.xfail("prevfail [%s]" % previousfailed.name)
+
+
+def pytest_ignore_collect(path):
+    if path.isdir():
+        parent_path = path.parts()[-2]
+        if parent_path.purebasename == "api" and path.purebasename not in modules:
+            return True
