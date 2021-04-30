@@ -12,23 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.0.0
         with:
-          poetry-version: 1.1.5
-      - name: Get poetry paths
-        id: poetry-path
-        run: echo "::set-output name=cache-dir::$(poetry config cache-dir)"
-      - name: Cache Poetry
-        uses: actions/cache@v2.1.4
-        id: cache
+          python-version: 3.6
+      - uses: Gr1N/setup-poetry@v4
         with:
-          path: ${{ steps.poetry-path.outputs.cache-dir }}
-          key: poetry-${{ steps.env.outputs.stage }}-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            poetry-${{ steps.env.outputs.stage }}-
-      - name: Install pacakges
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: poetry install --no-root
+          poetry-version: 1.1.6
+      - uses: allanchain/poetry-cache-action@release
+        with:
+          replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
+          cache-key-prefix: ${{ steps.env.outputs.stage }}
       - name: Lint with pre-commit
         run: poetry run pre-commit run -a --show-diff-on-failure --color=always
