@@ -4,7 +4,7 @@ from pkuphysu_wechat import db
 class Datax10n(db.Model):
     __tablename__ = "x10nUser"
     openid = db.Column(db.String(32), primary_key=True)
-    result = db.Column(db.String(1024))
+    result = db.Column(db.String(4096))
     starttime = db.Column(db.String(64))
     prob_ids = db.Column(db.String(32))
     name = db.Column(db.String(32))
@@ -18,7 +18,10 @@ class Datax10n(db.Model):
             db.session.add(student)
             db.session.commit()
             return {"played": False}
-        return {"played": True, "result": student.result}
+        return {
+            "played": True,
+            "result": (eval(student.result) if student.result else None),
+        }
 
     @classmethod
     def startgame(cls, openid: str, starttime: str, prob_ids: list) -> bool:

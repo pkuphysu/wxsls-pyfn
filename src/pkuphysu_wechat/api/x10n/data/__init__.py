@@ -1,11 +1,11 @@
 # import csv
-import json
-import os
+# import json
+# import os
 
-from flask import request
+# from flask import request
 
-from .. import bp
-from .database import Datax10nProbs
+# from .. import bp
+# from .database import Datax10nProbs
 
 # from pkuphysu_wechat.auth import token_required
 
@@ -13,20 +13,18 @@ from .database import Datax10nProbs
 # from logging import getLogger
 
 
-@bp.route("/api/x10n/data", methods=["GET", "POST"])
-def json_initialize() -> int:
-    # openid = token_required()
-    # check admin
-    if request.method == "POST":
-        basedir = os.path.abspath(os.path.dirname(__file__))
-        path = os.path.join(basedir, "probs.json")
-        with open(path, encoding="utf-8") as f:
-            probs = json.load(f)
-            for prob_id in range(len(probs)):
-                prob = probs[prob_id]
-                prob["probid"] = str(prob_id)
-                Datax10nProbs.put_prob(prob)
-        return len(probs)
+# @bp.route("/api/x10n/data", methods=["GET", "PUT"])
+# def json_initialize() -> int:
+#     # openid = token_required()
+#     # check admin
+#     if request.method == "PUT":
+#         probs = request.get_json(force=True).get("data")
+#         for prob_id in range(len(probs)):
+#             prob = probs[prob_id]
+#             prob["probid"] = str(prob_id)
+#             Datax10nProbs.put_prob(prob)
+#         returns = {}
+#         return len(probs)
 
 
 # def csv_initialize() -> int:

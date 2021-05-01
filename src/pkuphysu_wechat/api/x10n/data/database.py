@@ -7,7 +7,7 @@ class Datax10nProbs(db.Model):
     __tablename__ = "x10nProbs"
 
     probid = db.Column(db.String(32), primary_key=True)
-    text = db.Column(db.Unicode(32, collation="utf8_bin"), nullable=False)
+    text = db.Column(db.Unicode(32), nullable=False)
     img = db.Column(db.String(64), nullable=False)
     choices = db.Column(db.String(64), nullable=False)
     answers = db.Column(db.String(16), nullable=False)
