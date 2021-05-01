@@ -21,3 +21,25 @@ MASTER_IDS = ["MASTER"]
 [default.x10n]
 PROBLEMS_NUMBER = 10
 TIMEOUT = 1000
+
+[default.logging]
+version = 1
+
+[default.logging.root]
+level = "INFO"
+handlers = ["wsgi"]
+
+[default.logging.formatters.default]
+format = "[%(asctime)s] %(levelname)s in %(name)s:%(funcName)s %(message)s"
+
+[default.logging.handlers.wsgi]
+class = "logging.StreamHandler"
+level = "DEBUG"
+stream = "ext://flask.logging.wsgi_errors_stream"
+formatter = "default"
+
+[development]
+PRODUCTION = false
+
+[production]
+PRODUCTION = true

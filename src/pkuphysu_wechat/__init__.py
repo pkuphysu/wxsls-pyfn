@@ -13,11 +13,19 @@ def create_app():
 
     db.init_app(app)
 
-    from . import auth, tasks, wechat
+    if not settings.PRODUCTION:
+        from flask_cors import CORS
 
-    app.register_blueprint(wechat.bp)
-    app.register_blueprint(tasks.bp)
+        print(settings.PRODUCTION)
+        CORS(app, origins="http://localhost:3000")
+
+    from . import api, auth, dba, tasks, wechat
+
+    api.init_app(app)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(dba.bp)
+    app.register_blueprint(tasks.bp)
+    app.register_blueprint(wechat.bp)
 
     app.errorhandler(500)(lambda e: respond_error(500, "UnkownError", e.description))
 

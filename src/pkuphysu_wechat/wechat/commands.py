@@ -5,7 +5,7 @@ from command4bot.manager import split_keyword
 from werobot.messages.messages import TextMessage
 
 from .core import wechat_client, wechat_command_reg, wechat_mgr
-from .database import AutoReply
+from .models import AutoReply
 from .utils import check_master, get_similar_help_for_user, is_master_command, master
 
 logger = getLogger(__name__)

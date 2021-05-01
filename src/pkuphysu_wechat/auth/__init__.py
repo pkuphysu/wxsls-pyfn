@@ -1,7 +1,4 @@
-from flask import Blueprint
+from .utils import token_required
+from .views import bp
 
-bp = Blueprint("auth", __name__, url_prefix="/auth")
-
-
-from . import routes  # NOQA
-from .utils import token_required  # NOQA
+__all__ = ["bp", "token_required"]
