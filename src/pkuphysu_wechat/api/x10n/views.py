@@ -6,7 +6,7 @@ from flask import Blueprint, jsonify, request
 from pkuphysu_wechat.auth import token_required
 from pkuphysu_wechat.config import settings
 
-from .data import Datax10nProbs
+from .data.database import Datax10nProbs
 from .database import Datax10n
 
 logger = getLogger(__name__)
