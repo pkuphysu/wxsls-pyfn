@@ -6,11 +6,11 @@ from pkuphysu_wechat import db
 class Datax10nProbs(db.Model):
     __tablename__ = "x10nProbs"
 
-    probid = db.Column(db.String(32), primary_key=True)
-    text = db.Column(db.Unicode(32), nullable=False)
-    img = db.Column(db.String(64), nullable=False)
-    choices = db.Column(db.String(64), nullable=False)
-    answer = db.Column(db.String(16), nullable=False)
+    probid = db.Column(db.String(4), primary_key=True)
+    text = db.Column(db.String(256), nullable=False)
+    img = db.Column(db.String(256), nullable=False)
+    choices = db.Column(db.String(256), nullable=False)
+    answer = db.Column(db.String(1), nullable=False)
 
     @classmethod
     def put_prob(cls, prob: dict) -> None:
