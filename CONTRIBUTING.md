@@ -1,5 +1,7 @@
 ## 如何开发
 
+**注意** ❗ 在写代码之前，强烈建议阅读 [clean-code-python](https://github.com/zedr/clean-code-python) 或类似指导。始终记住，代码写出来不止你一个人看。
+
 ### Commit Style?
 
 最好是 [Angular's conventional commit](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit)，但是不做强制要求。
@@ -22,7 +24,7 @@
 
 对于不敏感的参数，直接在 `config/settings.toml` 下新建一块 `[default.name]`，然后直接用 `settings.name.CONFIG_NAME` 调用即可。
 
-### 新建了数据库表的 Model，怎么 create?
+### 新建了 SQLAlchemy 的 Model，怎么在数据库中创建表？
 
 分两种情况。如果是刚刚建立，那么管理员的微信授权还不能完成，则应该使用 `/tasks/db/create?token=<TASK_AUTH_TOKEN>` 完成数据库表的初始创建。
 
