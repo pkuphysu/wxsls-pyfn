@@ -31,6 +31,7 @@ class TestX10n:
         assert not rv.json["played"]
         assert rv.json["questions"]
         assert rv.json["questions"][0]["text"] == "xx 的数量级是？"
+        assert rv.json["questions"][0]["choices"] == ["一个月", "半年"]
 
     def test_post_result(self, client):
         rv = client.open_with_token(
