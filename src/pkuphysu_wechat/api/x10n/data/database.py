@@ -58,8 +58,8 @@ class Datax10nProbs(db.Model):
         assert isinstance(number, int) and number >= 1, "不合法的数字输入"
         # need testing
         return [
-            db.session.query(cls).order_by(func.random()).first().probid
-            for x in range(number)
+            x.probid
+            for x in db.session.query(cls).order_by(func.random()).limit(number)
         ]
 
     @classmethod
