@@ -2,6 +2,8 @@ import json
 
 import pytest
 
+from pkuphysu_wechat.config import settings
+
 
 @pytest.mark.incremental
 class TestX10n:
@@ -32,6 +34,10 @@ class TestX10n:
         assert rv.json["questions"]
         assert rv.json["questions"][0]["text"] == "xx 的数量级是？"
         assert rv.json["questions"][0]["choices"] == ["一个月", "半年"]
+        assert (
+            len(set([x["number"] for x in rv.json["questions"]]))
+            == settings.x10n.PROBLEMS_NUMBER
+        )
 
     def test_post_result(self, client):
         rv = client.open_with_token(
