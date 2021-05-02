@@ -16,7 +16,7 @@ class TestX10n:
                         text="xx 的数量级是？",
                         img="https://tuchuang...",
                         choices=json.dumps(["一个月", "半年"]),
-                        answers="1",
+                        answer="1",
                     )
                     for i in range(50)
                 ]

@@ -10,7 +10,7 @@ class Datax10nProbs(db.Model):
     text = db.Column(db.Unicode(32), nullable=False)
     img = db.Column(db.String(64), nullable=False)
     choices = db.Column(db.String(64), nullable=False)
-    answers = db.Column(db.String(16), nullable=False)
+    answer = db.Column(db.String(16), nullable=False)
 
     @classmethod
     def put_prob(cls, prob: dict) -> None:
@@ -19,7 +19,7 @@ class Datax10nProbs(db.Model):
             isinstance(prob["probid"], str)
             and isinstance(prob["text"], str)
             and isinstance(prob["img"], str)
-            and isinstance(prob["answers"], str)
+            and isinstance(prob["answer"], str)
         ), "题目前三项应为字符串"
         assert isinstance(prob["choices"], list), "题目选项应为列表"
         problem = cls.query.get(prob["probid"])
@@ -28,14 +28,14 @@ class Datax10nProbs(db.Model):
             problem.text = prob["text"]
             problem.img = prob["img"]
             problem.choices = "|".join([str(x) for x in prob["choices"]])
-            problem.answers = prob["answers"]
+            problem.answer = prob["answer"]
         else:
             problem = cls(
                 probid=prob["probid"],
                 text=prob["text"],
                 img=prob["img"],
                 choices="|".join([str(x) for x in prob["choices"]]),
-                answers=prob["answers"],
+                answer=prob["answer"],
             )
         db.session.add(problem)
         db.session.commit()
@@ -64,7 +64,7 @@ class Datax10nProbs(db.Model):
     def get_ans(cls, probid: str) -> list:
         assert isinstance(probid, str), "不合法的id输入"
         prob = cls.query.get(probid)
-        return prob.answers
+        return prob.answer
 
     @classmethod
     def del_prob(cls, probid: str) -> None:
