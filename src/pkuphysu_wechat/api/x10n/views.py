@@ -56,6 +56,7 @@ def index():
             )
         user_result = {
             "time": time_used,
+            "name": result["name"],
             "questions": questions,
         }
         Datax10n.put_info(openid, user_result)
