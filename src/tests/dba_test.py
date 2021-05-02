@@ -86,7 +86,6 @@ class TestProcess:
             method="PUT",
             json=dict(data=[dict(index=5, content="tester" * 10)]),
         )
-        print(rv.json)
         assert rv.json["status"] == 500
 
     def test_migration_preview(self, client, master_access):

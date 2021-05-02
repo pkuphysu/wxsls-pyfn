@@ -2,6 +2,7 @@ from logging import getLogger
 
 from flask import Blueprint, request
 from sqlalchemy import inspect
+from sqlalchemy.exc import DataError
 from sqlalchemy.sql.expression import insert
 
 from pkuphysu_wechat import db
@@ -63,10 +64,15 @@ def manage_table(table_name):
             return respond_error(400, "DBADataBadStructure")
     if request.method == "PUT":
         db.session.query(table).delete(synchronize_session=False)
-    result = db.session.execute(insert(table), records)
-    logger.info("Insert into %s result: %s", table_name, str(result))
-    db.session.commit()
-    return respond_success(rows=result.rowcount)
+    try:
+        result = db.session.execute(insert(table), records)
+        logger.info("Insert into %s result: %s", table_name, str(result))
+        db.session.commit()
+        return respond_success(rows=result.rowcount)
+    except DataError as e:
+        logger.error(e)
+        db.session.rollback()
+        return respond_error(500, "DBADataInsertFail")
 
 
 @bp.route("/db-tables/migrate", methods=["GET", "POST"])
