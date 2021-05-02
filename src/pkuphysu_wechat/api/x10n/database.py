@@ -8,7 +8,7 @@ class Datax10n(db.Model):
     openid = db.Column(db.String(32), primary_key=True)
     result = db.Column(db.String(4096))
     starttime = db.Column(db.String(64))
-    prob_ids = db.Column(db.String(32))
+    prob_ids = db.Column(db.String(128))
     name = db.Column(db.String(32))
     wx_id = db.Column(db.String(32))
 
@@ -32,7 +32,7 @@ class Datax10n(db.Model):
             return False
         else:
             student.starttime = starttime
-            student.prob_ids = ",".join(prob_ids)
+            student.prob_ids = json.dumps(prob_ids)
             db.session.add(student)
             db.session.commit()
             return True
@@ -41,7 +41,7 @@ class Datax10n(db.Model):
     def get_probs(cls, openid: str) -> list:
         student = cls.query.get(openid)
         assert student is not None, "用户不存在"
-        prob_ids = student.prob_ids.split(",")
+        prob_ids = json.loads(student.prob_ids)
         return prob_ids
 
     @classmethod

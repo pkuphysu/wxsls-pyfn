@@ -27,8 +27,6 @@ def index():
             info["questions"] = probs
             if not Datax10n.startgame(openid, starttime, prob_ids):
                 return {"msg": "failed"}
-        # else:
-        #     return info
         return jsonify(info)
     elif request.method == "POST":
         result = request.get_json(force=True).get("result")
@@ -49,7 +47,6 @@ def index():
             return {"msg": "you have submit a list with wrong probids"}
         for question in questions:
             if question["number"] not in prob_ids:
-                # 提交题目是否为发出题目的检查
                 return {"msg": "you have submit a list with wrong probids"}
             question["answer"] = str(question["answer"]) == Datax10nProbs.get_ans(
                 question["number"]
@@ -65,8 +62,4 @@ def index():
             "result": user_result,
         }
         return jsonify(returns)
-    # if request.method == 'DELETE':
-    #     Datax10n.del_info(raw_id)
-    # if Datax10n.put_info(openid, request.data.decode()):
-    #     return {"msg": "success"}
     return {"msg": "da lao rao ming"}

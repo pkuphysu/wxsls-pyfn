@@ -56,7 +56,6 @@ class Datax10nProbs(db.Model):
     @classmethod
     def get_ran_probids(cls, number) -> list:
         assert isinstance(number, int) and number >= 1, "不合法的数字输入"
-        # need testing
         return [
             x.probid
             for x in db.session.query(cls).order_by(func.random()).limit(number)
