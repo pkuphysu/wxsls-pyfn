@@ -1,3 +1,5 @@
+import json
+
 from sqlalchemy.sql.expression import func
 
 from pkuphysu_wechat import db
@@ -27,14 +29,14 @@ class Datax10nProbs(db.Model):
             print(f"覆盖第{prob['probid']}题")
             problem.text = prob["text"]
             problem.img = prob["img"]
-            problem.choices = "|".join([str(x) for x in prob["choices"]])
+            problem.choices = json.dumps([str(x) for x in prob["choices"]])
             problem.answer = prob["answer"]
         else:
             problem = cls(
                 probid=prob["probid"],
                 text=prob["text"],
                 img=prob["img"],
-                choices="|".join([str(x) for x in prob["choices"]]),
+                choices=json.dumps([str(x) for x in prob["choices"]]),
                 answer=prob["answer"],
             )
         db.session.add(problem)
@@ -47,7 +49,7 @@ class Datax10nProbs(db.Model):
         problem = {
             "text": prob.text,
             "img": prob.img,
-            "choices": prob.choices.split("|"),
+            "choices": json.loads(prob.choices),
         }
         return problem
 

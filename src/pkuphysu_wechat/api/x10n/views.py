@@ -27,8 +27,8 @@ def index():
             info["questions"] = probs
             if not Datax10n.startgame(openid, starttime, prob_ids):
                 return {"msg": "failed"}
-        else:
-            return info
+        # else:
+        #     return info
         return jsonify(info)
     elif request.method == "POST":
         result = request.get_json(force=True).get("result")
@@ -54,7 +54,7 @@ def index():
             "time": time_used,
             "questions": questions,
         }
-        Datax10n.put_info(openid, str(user_result))
+        Datax10n.put_info(openid, user_result)
         returns = {
             "msg": "success",
             "result": user_result,
@@ -62,6 +62,6 @@ def index():
         return jsonify(returns)
     # if request.method == 'DELETE':
     #     Datax10n.del_info(raw_id)
-    if Datax10n.put_info(openid, request.data.decode()):
-        return {"msg": "success"}
+    # if Datax10n.put_info(openid, request.data.decode()):
+    #     return {"msg": "success"}
     return {"msg": "da lao rao ming"}

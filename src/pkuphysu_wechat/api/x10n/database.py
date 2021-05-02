@@ -1,3 +1,5 @@
+import json
+
 from pkuphysu_wechat import db
 
 
@@ -20,7 +22,7 @@ class Datax10n(db.Model):
             return {"played": False}
         return {
             "played": True,
-            "result": (eval(student.result) if student.result else None),
+            "result": None if student.result is None else json.loads(student.result),
         }
 
     @classmethod
@@ -60,11 +62,11 @@ class Datax10n(db.Model):
         return True
 
     @classmethod
-    def put_info(cls, openid: str, result: str) -> bool:
+    def put_info(cls, openid: str, result: dict) -> bool:
         student = cls.query.get(openid)
         if student is None or student.result:
             return False
-        student.result = result
+        student.result = json.dumps(result)
         db.session.add(student)
         db.session.commit()
         return True
