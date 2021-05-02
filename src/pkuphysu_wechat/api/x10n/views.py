@@ -43,10 +43,14 @@ def index():
             return None
         time_used = f"{end_time-start_time:.2f}"
         Datax10n.put_name(openid, result["name"], result["wx"])
-        # prob_ids = Datax10n.get_probs(openid)
+        prob_ids = Datax10n.get_probs(openid)
         questions = result["questions"]
-        # ans = {x: Datax10nProbs.get_ans(x) for x in prob_ids}
+        if len(questions) != settings.x10n.PROBLEMS_NUMBER:
+            return {"msg": "you have submit a list with wrong probids"}
         for question in questions:
+            if question["number"] not in prob_ids:
+                # 提交题目是否为发出题目的检查
+                return {"msg": "you have submit a list with wrong probids"}
             question["answer"] = str(question["answer"]) == Datax10nProbs.get_ans(
                 question["number"]
             )
