@@ -1,13 +1,17 @@
+import os
+
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-from pkuphysu_wechat import create_app, db, settings
-
-from .utils import Client
+os.environ["ENV_FOR_DYNACONF"] = "testing"
 
 
 @pytest.fixture(scope="class")
 def client():
+    from pkuphysu_wechat import create_app, db
+
+    from .utils import Client
+
     app = create_app()
     app.test_client_class = Client
     with app.app_context():
@@ -21,6 +25,8 @@ def client():
 
 @pytest.fixture(scope="class")
 def master_access():
+    from pkuphysu_wechat import settings
+
     mpatch = MonkeyPatch()
     mpatch.setitem(settings["WECHAT"], "MASTER_IDS", "developmentopenid")
     yield

@@ -75,7 +75,12 @@ def migrate():
 
     # use `db.session.connection()` instead of `db.engine.connect()`
     # to avoid lock hang
-    context = MigrationContext.configure(db.session.connection())
+    context = MigrationContext.configure(
+        db.session.connection(),
+        opts={
+            "compare_type": True,
+        },
+    )
 
     if request.method == "GET":
         import pprint

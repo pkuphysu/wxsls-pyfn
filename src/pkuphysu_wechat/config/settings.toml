@@ -39,3 +39,10 @@ PRODUCTION = false
 
 [production]
 PRODUCTION = true
+
+[testing]
+PRODUCTION = false
+
+[testing.flask.dynaconf_merge]
+TESTING = true
+PROPAGATE_EXCEPTIONS = false
