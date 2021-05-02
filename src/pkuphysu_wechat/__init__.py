@@ -16,7 +16,6 @@ def create_app():
     if not settings.PRODUCTION:
         from flask_cors import CORS
 
-        print(settings.PRODUCTION)
         CORS(app, origins="http://localhost:3000")
 
     from . import api, auth, dba, tasks, wechat

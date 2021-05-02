@@ -31,9 +31,7 @@ poetry run pre-commit install
 
 ### 安装并初始化 PostgreSQL 数据库
 
-```sql
-CREATE DATABASE wechat WITH ENCODING 'UTF8'
-```
+[PostgreSQL/Postgres Create Database: How to Create Example](https://www.guru99.com/postgresql-create-database.html)
 
 ### 设置文件 `.secret.local.toml`
 

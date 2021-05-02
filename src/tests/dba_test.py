@@ -80,20 +80,39 @@ class TestProcess:
         rv = client.open_with_token("/db-tables/new_table", method="GET")
         assert rv.json["count"] == 0
 
+    def test_col_len_before_migration(self, client, master_access):
+        rv = client.open_with_token(
+            "/db-tables/new_table",
+            method="PUT",
+            json=dict(data=[dict(index=5, content="tester" * 10)]),
+        )
+        assert rv.json["status"] == 500
+
     def test_migration_preview(self, client, master_access):
         class BrandNewTable(db.Model):
             __tablename__ = "new_table"
             __table_args__ = dict(extend_existing=True)
             index = db.Column(db.Integer(), primary_key=True)
+            content = db.Column(db.String(64))
             data = db.Column(db.String(32))
 
         rv = client.open_with_token("/db-tables/migrate", method="GET")
         assert rv.json["status"] == 200
         assert "add_column" in rv.json["migration"]
+        assert "modify_type" in rv.json["migration"]
 
     def test_migration(self, client, master_access):
         rv = client.open_with_token("/db-tables/migrate", method="POST")
         assert rv.json["status"] == 200
+
+    def test_migration_col_len(self, client, master_access):
+        rv = client.open_with_token(
+            "/db-tables/new_table",
+            method="PUT",
+            json=dict(data=[dict(index=5, content="tester" * 10, data="nothing")]),
+        )
+        assert rv.json["status"] == 200
+        assert rv.json["rows"] == 1
 
     def test_migration_done(self, client, master_access):
         rv = client.open_with_token("/db-tables/migrate", method="GET")

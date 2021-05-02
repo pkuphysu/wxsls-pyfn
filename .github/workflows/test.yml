@@ -1,0 +1,40 @@
+name: Run Tests
+
+on:
+  pull_request:
+  push:
+    paths-ignore:
+      - "**.md"
+
+jobs:
+  test:
+    name: run tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: wechat
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - uses: Gr1N/setup-poetry@v4
+        with:
+          poetry-version: 1.1.6
+      - uses: allanchain/poetry-cache-action@release
+        with:
+          replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
+      - name: Run test
+        run: poetry run pytest

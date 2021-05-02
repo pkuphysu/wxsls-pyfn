@@ -1,14 +1,17 @@
+import os
+
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-from pkuphysu_wechat import create_app, db, settings
-from pkuphysu_wechat.api import modules
-
-from .utils import Client
+os.environ["ENV_FOR_DYNACONF"] = "testing"
 
 
 @pytest.fixture(scope="class")
 def client():
+    from pkuphysu_wechat import create_app, db
+
+    from .utils import Client
+
     app = create_app()
     app.test_client_class = Client
     with app.app_context():
@@ -22,6 +25,8 @@ def client():
 
 @pytest.fixture(scope="class")
 def master_access():
+    from pkuphysu_wechat import settings
+
     mpatch = MonkeyPatch()
     mpatch.setitem(settings["WECHAT"], "MASTER_IDS", "developmentopenid")
     yield
@@ -42,6 +47,8 @@ def pytest_runtest_setup(item):
 
 
 def pytest_ignore_collect(path):
+    from pkuphysu_wechat.api import modules
+
     if path.isdir():
         parent_path = path.parts()[-2]
         if parent_path.purebasename == "api" and path.purebasename not in modules:
