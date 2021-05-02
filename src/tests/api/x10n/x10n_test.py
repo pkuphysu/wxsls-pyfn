@@ -27,7 +27,7 @@ class TestX10n:
         assert rv.json["status"] == 200
         assert rv.json["rows"] == 50
 
-    def test_get_questions(self, client):
+    def test_get_and_post_questions(self, client):
         rv = client.open_with_token("/api/x10n", method="GET")
         assert rv.status_code == 200
         assert not rv.json["played"]
@@ -38,8 +38,10 @@ class TestX10n:
             len(set([x["number"] for x in rv.json["questions"]]))
             == settings.x10n.PROBLEMS_NUMBER
         )
-
-    def test_post_result(self, client):
+        probids = [x["number"] for x in rv.json["questions"]]
+        # def test_post_result(self, client):
+        # 这里为了传递受到的题目，把两个测试改成一个了，用probids传递题目的id，
+        # 用此检验是否可以检验提交题目为发出题目
         rv = client.open_with_token(
             "/api/x10n",
             method="POST",
@@ -47,19 +49,16 @@ class TestX10n:
                 result=dict(
                     name="罗翔",
                     wx="zhangsan",
-                    questions=[
-                        dict(number=str(i), answer=i % 2)
-                        for i in range(30)  # NOTE: magic number! change it!
-                    ],
+                    questions=[dict(number=i, answer=int(i) % 2) for i in probids],
                 )
             ),
         )
-        print(rv)
+        # print(rv)
+        print(probids)
         assert rv.status_code == 200
         assert rv.json["result"]["time"]
         assert rv.json["result"]["questions"] == [
-            dict(number=str(i), answer=bool(i % 2))
-            for i in range(30)  # NOTE: magic number! change it!
+            dict(number=i, answer=bool(int(i) % 2)) for i in probids
         ]
 
     def test_get_result(self, client):
@@ -67,4 +66,6 @@ class TestX10n:
         assert rv.status_code == 200
         assert rv.json["played"]
         assert rv.json["result"]
-        assert not rv.json["result"]["questions"][0]["answer"]
+        assert rv.json["result"]["questions"][0]["answer"] == bool(
+            int(rv.json["result"]["questions"][0]["number"]) % 2
+        )
