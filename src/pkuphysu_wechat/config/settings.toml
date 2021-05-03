@@ -18,6 +18,10 @@ APP_SECRET = ""
 TOKEN = ""
 MASTER_IDS = ["MASTER"]
 
+[default.x10n]
+PROBLEMS_NUMBER = 10
+TIMEOUT = 1000
+
 [default.logging]
 version = 1
 
