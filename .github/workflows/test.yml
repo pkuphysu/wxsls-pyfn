@@ -37,4 +37,6 @@ jobs:
         with:
           replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
       - name: Run test
-        run: poetry run pytest
+        run: poetry run python scripts/auto_coverage.py
+      - name: Upload coverage
+        run: bash <(curl -s https://codecov.io/bash)
