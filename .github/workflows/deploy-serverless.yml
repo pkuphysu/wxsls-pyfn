@@ -38,6 +38,7 @@ jobs:
           replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
           cache-key-prefix: ${{ steps.env.outputs.stage }}
           install-args: --no-dev --no-root
+          ensure-module: flask
       - name: Determine options
         id: opt
         run: |
