@@ -112,4 +112,6 @@ def migrate():
                 operation.invoke(inner_op)
         else:
             operation.invoke(outer_op)
+    db.session.commit()
+    db.session.close()
     return respond_success()
