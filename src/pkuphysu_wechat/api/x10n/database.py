@@ -8,7 +8,7 @@ class Datax10n(db.Model):
     openid = db.Column(db.String(32), primary_key=True)
     result = db.Column(db.String(4096))
     starttime = db.Column(db.String(64))
-    prob_ids = db.Column(db.String(128))
+    prob_ids = db.Column(db.String(512))
     name = db.Column(db.String(32))
     wx_id = db.Column(db.String(32))
 
