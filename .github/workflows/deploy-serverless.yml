@@ -1,0 +1,68 @@
+name: Deploy Serverless
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+
+jobs:
+  deploy:
+    name: deploy to serverless
+    runs-on: ubuntu-latest
+    if: ${{ ! contains(github.event.head_commit.message, '[skip-deploy]') }}
+    steps:
+      - name: Determine env
+        id: env
+        run: |
+          if [ $GITHUB_REF == 'refs/heads/master' ]; then
+            echo '::set-output name=stage::prod'
+            echo '::set-output name=dynaconf_env::production'
+          else
+            echo '::set-output name=stage::dev'
+            echo '::set-output name=dynaconf_env::development'
+          fi
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - uses: Gr1N/setup-poetry@v4
+        with:
+          poetry-version: 1.1.6
+      - name: Get poetry path
+        id: poetry-path
+        run: poetry run python -c "from distutils.sysconfig import get_python_lib;print('::set-output name=lib-dir::' + get_python_lib())"
+      - uses: allanchain/poetry-cache-action@release
+        id: cache
+        with:
+          replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
+          cache-key-prefix: ${{ steps.env.outputs.stage }}
+          install-args: --no-dev --no-root
+          ensure-module: flask
+      - name: Determine options
+        id: opt
+        run: |
+          if [ $HIT == 'true' ]; then
+            echo '::set-output name=deploy_option::--target src'
+          fi
+        env:
+          HIT: ${{ steps.cache.outputs.cache-hit }}
+      - name: Dump secrets
+        run: echo $SECRETS | base64 --decode > src/pkuphysu_wechat/config/.secrets.toml
+        env:
+          SECRETS: ${{ secrets.SECRET_SETTING }}
+      - name: Install serverless
+        run: curl -o- -L https://slss.io/install | bash
+      - name: Deploy serverless
+        timeout-minutes: 10
+        run: |
+          set -o pipefail
+          $HOME/.serverless/bin/sls deploy ${{ steps.opt.outputs.deploy_option }} \
+            | grep -v -e '中 ' -e 'ing ' -e NA
+        env:
+          STAGE: ${{ steps.env.outputs.stage }}
+          LAYER_SRC: ${{ steps.poetry-path.outputs.lib-dir }}
+          DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env }}
+          SERVERLESS_PLATFORM_VENDOR: tencent
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}

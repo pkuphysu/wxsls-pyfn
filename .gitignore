@@ -1,9 +1,15 @@
 __pycache__/
 .pytest_cache/
 .mypy_cache/
+
 .vscode/
 
+# serverless framework credential file
 .env
 
+# pyenv version file
 .python-version
-release*.zip
+
+# coverage data file
+.coverage
+coverage.xml

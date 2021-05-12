@@ -6,7 +6,7 @@ Whenever secrets need an update, run this script by:
 
 ```sh
 # No extra packages needed, thus no need for activating venv.
-python .github/secret_encoder.py
+python scripts/secret_encoder.py
 ```
 
 Then update GitHub actions' secret with printed base64 string.
