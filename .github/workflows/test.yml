@@ -1,4 +1,4 @@
-name: Run Tests
+name: Test and Lint
 
 on:
   pull_request:
@@ -7,8 +7,8 @@ on:
       - "**.md"
 
 jobs:
-  test:
-    name: run tests
+  test-and-lint:
+    name: test and lint
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -40,3 +40,5 @@ jobs:
         run: poetry run python scripts/auto_coverage.py
       - name: Upload coverage
         run: bash <(curl -s https://codecov.io/bash)
+      - name: Lint with pre-commit
+        run: poetry run pre-commit run -a --show-diff-on-failure --color=always
