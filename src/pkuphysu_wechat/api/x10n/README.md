@@ -55,7 +55,7 @@ Body:
 ```js
 result: {
   name: 'zhangsan',
-  wx: 'wxid_jkahg',
+  stuID: 'wxid_jkahg',
   questions: [
     {
       number: 3,

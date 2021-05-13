@@ -40,7 +40,7 @@ def index():
         if end_time - start_time > settings.x10n.TIMEOUT:
             return None
         time_used = f"{end_time-start_time:.2f}"
-        Datax10n.put_name(openid, result["name"], result["wx"])
+        Datax10n.put_name(openid, result["name"], result["stuID"])
         prob_ids = Datax10n.get_probs(openid)
         questions = result["questions"]
         if len(questions) != settings.x10n.PROBLEMS_NUMBER:

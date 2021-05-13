@@ -48,7 +48,7 @@ class TestX10n:
             json=dict(
                 result=dict(
                     name="罗翔",
-                    wx="zhangsan",
+                    stuID="zhangsan",
                     questions=[dict(number=i, answer=int(i) % 2) for i in probids],
                 )
             ),
