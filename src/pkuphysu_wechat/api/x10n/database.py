@@ -10,7 +10,7 @@ class Datax10n(db.Model):
     starttime = db.Column(db.String(64))
     prob_ids = db.Column(db.String(512))
     name = db.Column(db.String(32))
-    wx_id = db.Column(db.String(32))
+    stu_id = db.Column(db.String(32))
 
     @classmethod
     def get_info(cls, openid: str) -> dict:
@@ -52,11 +52,11 @@ class Datax10n(db.Model):
         return start_time
 
     @classmethod
-    def put_name(cls, openid: str, name: str, wx_id: str) -> bool:
+    def put_name(cls, openid: str, name: str, stu_id: str) -> bool:
         student = cls.query.get(openid)
         assert student is not None, "用户不存在"
         student.name = name
-        student.wx_id = wx_id
+        student.stu_id = stu_id
         db.session.add(student)
         db.session.commit()
         return True
