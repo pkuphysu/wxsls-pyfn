@@ -2,6 +2,7 @@ import os
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
+from _pytest.outcomes import XFailed
 
 os.environ["ENV_FOR_DYNACONF"] = "testing"
 
@@ -35,9 +36,8 @@ def master_access():
 
 def pytest_runtest_makereport(item, call):
     if "incremental" in item.keywords:
-        if call.excinfo is not None:
-            parent = item.parent
-            parent._previousfailed = item
+        if call.excinfo is not None and call.excinfo.type != XFailed:
+            item.parent._previousfailed = item
 
 
 def pytest_runtest_setup(item):
