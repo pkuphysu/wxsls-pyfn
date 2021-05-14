@@ -19,7 +19,11 @@ class TestProcess:
         assert rv.json["status"] == 200
         assert len(rv.json["tables"])
         assert not rv.json["tables"].pop("new_table")["exists"]
-        assert all(info["exists"] for info in rv.json["tables"].values())
+        assert all(
+            info["exists"]
+            for name, info in rv.json["tables"].items()
+            if name != "new_table"
+        )
 
     def test_create(self, client, master_access):
         rv = client.open_with_token("/db-tables/create-all", method="POST")
