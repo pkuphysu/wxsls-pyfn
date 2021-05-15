@@ -12,7 +12,7 @@ default = true
 [tool.poetry.dependencies]
 python = "^3.6.1"
 WeRoBot = "^1.13.1"
-Flask = "^2.0.0"
+Flask = "^1.1.2"
 command4bot = "^0.4.1"
 dynaconf = "^3.1.4"
 sqlalchemy = "^1.4.6"
