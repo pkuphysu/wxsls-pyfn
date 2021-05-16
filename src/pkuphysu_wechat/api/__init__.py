@@ -1,6 +1,6 @@
 from importlib import import_module
 
-modules = ["random_draw", "x10n"]
+modules = ["random_draw"]
 
 
 def init_app(app):
