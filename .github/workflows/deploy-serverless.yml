@@ -25,13 +25,19 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: 3.9
       - uses: Gr1N/setup-poetry@v4
         with:
           poetry-version: 1.1.6
-      - name: Get poetry path
-        id: poetry-path
-        run: poetry run python -c "from distutils.sysconfig import get_python_lib;print('::set-output name=lib-dir::' + get_python_lib())"
+      - name: Get site-packages path
+        id: lib-path
+        shell: poetry run python {0}
+        run: |
+          from distutils.sysconfig import get_python_lib
+          from pathlib import Path
+
+          lib_parent = Path(get_python_lib()).parent
+          print('::set-output name=parent::' + str(lib_parent))
       - uses: allanchain/poetry-cache-action@release
         id: cache
         with:
@@ -39,6 +45,7 @@ jobs:
           cache-key-prefix: ${{ steps.env.outputs.stage }}
           install-args: --no-dev --no-root
           ensure-module: flask
+          upload-strategy: on-success
       - name: Determine options
         id: opt
         run: |
@@ -53,16 +60,19 @@ jobs:
           SECRETS: ${{ secrets.SECRET_SETTING }}
       - name: Install serverless
         run: curl -o- -L https://slss.io/install | bash
+        env:
+          VERSION: 2.41.2
       - name: Deploy serverless
-        timeout-minutes: 10
+        shell: bash --noprofile --norc -eo pipefail {0}
         run: |
-          set -o pipefail
-          $HOME/.serverless/bin/sls deploy ${{ steps.opt.outputs.deploy_option }} \
+          # Force deploy to fix permission loss problem
+          $HOME/.serverless/bin/sls deploy --force ${{ steps.opt.outputs.deploy_option }} \
             | grep -v -e '中 ' -e 'ing ' -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
-          LAYER_SRC: ${{ steps.poetry-path.outputs.lib-dir }}
+          LAYER_SRC: ${{ steps.lib-path.outputs.parent }}
           DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env }}
           SERVERLESS_PLATFORM_VENDOR: tencent
+          SLS_GEO_LOCATION: cn
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
           TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
