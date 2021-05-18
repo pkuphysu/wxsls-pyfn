@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import coverage
@@ -16,8 +17,10 @@ print(OMIT_MODULES)
 
 cov = coverage.Coverage(source_pkgs=["pkuphysu_wechat"], omit=OMIT_MODULES)
 cov.start()
-pytest.main()
+exit_code = pytest.main()
 cov.stop()
 cov.save()
 
 cov.xml_report()
+
+sys.exit(exit_code)
