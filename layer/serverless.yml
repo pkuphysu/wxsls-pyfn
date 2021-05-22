@@ -7,4 +7,4 @@ inputs:
   zone: ap-shanghai-2
   src: ${env:LAYER_SRC}
   runtimes:
-    - Python3.6
+    - CustomRuntime

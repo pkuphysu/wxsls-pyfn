@@ -1,32 +1,42 @@
-component: flask
+component: scf
 name: pkuphysu-wechat
 app: pkuphysu-wechat
 stage: ${env:STAGE}
 inputs:
+  name: ${name}-${stage}
   src:
     src: ./
     exclude:
       - tests/**
       - "*.yml"
       - ".secret*"
+  handler: index.main_handler
   region: ap-shanghai
   zone: ap-shanghai-2
-  runtime: Python3.6
+  runtime: CustomRuntime
   layers:
     - name: ${output:${stage}:${app}:pkuphysu-wechat-layer.name}
       version: ${output:${stage}:${app}:pkuphysu-wechat-layer.version}
-  functionConf:
-    eip: true
-    vpcConfig:
-      vpcId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.vpcId}
-      subnetId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.subnetId}
-    environment:
-      variables:
-        DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://${output:${stage}:${app}:pkuphysu-wechat-db.private.user}:${output:${stage}:${app}:pkuphysu-wechat-db.private.password}@${output:${stage}:${app}:pkuphysu-wechat-db.private.host}/${output:${stage}:${app}:pkuphysu-wechat-db.private.dbname}
-        ENV_FOR_DYNACONF: ${env:DYNACONF_ENV}
-  apigatewayConf:
-    protocols:
-      - http
-      - https
-    environment: release
-    enableCORS: true
+    - name: ${output:${stage}:${app}:pkuphysu-wechat-python.name}
+      version: ${output:${stage}:${app}:pkuphysu-wechat-python.version}
+  eip: true
+  vpcConfig:
+    vpcId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.vpcId}
+    subnetId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.subnetId}
+  environment:
+    variables:
+      DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://${output:${stage}:${app}:pkuphysu-wechat-db.private.user}:${output:${stage}:${app}:pkuphysu-wechat-db.private.password}@${output:${stage}:${app}:pkuphysu-wechat-db.private.host}/${output:${stage}:${app}:pkuphysu-wechat-db.private.dbname}
+      ENV_FOR_DYNACONF: ${env:DYNACONF_ENV}
+  events:
+    - apigw:
+        parameters:
+          serviceName: apigw_${stage}
+          protocols:
+            - https
+          environment: release
+          endpoints:
+            - path: /
+              method: ANY
+              enableCORS: true
+              function:
+                isIntegratedResponse: true
