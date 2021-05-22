@@ -20,6 +20,7 @@ inputs:
     - name: ${output:${stage}:${app}:pkuphysu-wechat-python.name}
       version: ${output:${stage}:${app}:pkuphysu-wechat-python.version}
   eip: true
+  initTimeout: 6
   vpcConfig:
     vpcId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.vpcId}
     subnetId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.subnetId}
