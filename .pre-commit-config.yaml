@@ -1,12 +1,28 @@
 repos:
   - repo: local
     hooks:
+      - id: pylint
+        name: pylint
+        entry: poetry run pylint
+        language: system
+        types: [python]
+        args: ["--score=n"]
+        require_serial: false
+        additional_dependencies: []
+
+      - id: bandit
+        name: bandit
+        description: "Bandit is a tool for finding common security issues in Python code"
+        entry: poetry run bandit
+        language: system
+        types: [python]
+        args: ["-c", ".bandit.yaml", "-ll", "-r"]
+
       - id: black
         name: black
         description: "Black: The uncompromising Python code formatter"
-        entry: black
-        language: python
-        language_version: python3
+        entry: poetry run black
+        language: system
         minimum_pre_commit_version: 2.9.2
         require_serial: true
         types_or: [python, pyi]
@@ -14,38 +30,19 @@ repos:
       - id: flake8
         name: flake8
         description: "`flake8` is a command-line utility for enforcing style consistency across Python projects."
-        entry: flake8
-        language: python
+        entry: poetry run flake8
+        language: system
         types: [python]
         require_serial: true
 
       - id: isort
         name: isort
-        entry: isort
+        entry: poetry run isort
         require_serial: true
-        language: python
-        language_version: python3
+        language: system
         types_or: [cython, pyi, python]
         args: ["--filter-files"]
         minimum_pre_commit_version: "2.9.0"
-
-      - id: pylint
-        name: pylint
-        entry: pylint
-        language: python
-        "types": [python]
-        args: ["--score=n"]
-        require_serial: false
-        additional_dependencies: []
-
-      - id: bandit
-        name: bandit
-        description: 'Bandit is a tool for finding common security issues in Python code'
-        entry: bandit
-        language: python
-        language_version: python3
-        types: [python]
-        args: ['-c', '.bandit.yaml', '-ll', '-r']
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.3.0
