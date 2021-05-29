@@ -67,7 +67,7 @@ jobs:
         run: |
           # Force deploy to fix permission loss problem
           $HOME/.serverless/bin/sls deploy --force ${{ steps.opt.outputs.deploy_option }} \
-            | grep -v -e '中 ' -e 'ing ' -e NA
+            | grep -v -e '中 ' -e '化 ' -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           LAYER_SRC: ${{ steps.lib-path.outputs.parent }}
