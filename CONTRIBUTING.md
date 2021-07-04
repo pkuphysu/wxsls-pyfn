@@ -58,7 +58,7 @@
 8. review 通过后，根据 commit 是否混乱，决定是 create merge commit 还是 squash merge
 9. 该新建分支与 dev 分支的历史使命已经结束，删除以保持整洁
 10. 如果上线后有问题，可以视时间紧迫与代码修改方便程度，选择直接在腾讯云在线修改代码还是重复以上步骤
-11. 功能使命结束，在 dev 上则将 `modules` 回复原样即可，适时如上 merge into master
+12. 功能使命结束，适时将 master 上的 `modules` 回复原样即可
 
 ## 数据库管理
 
