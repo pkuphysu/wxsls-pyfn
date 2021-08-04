@@ -42,3 +42,8 @@ inputs:
               enableCORS: true
               function:
                 isIntegratedResponse: true
+    - timer:
+        parameters:
+          name: health-check
+          cronExpression: "0 */10 * * * * *" # trigger every 10 min
+          enable: true

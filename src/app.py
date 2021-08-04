@@ -27,6 +27,9 @@ while True:
     event = requests.get(EVENT_URL).json()
     # Tencent does not catch stdout here
     print(f"Received {event}", file=sys.stderr)
+    if event.get("Type") == "Timer" and event.get("TriggerName") == "health-check":
+        requests.post(RESPONSE_URL, json={"message": "ok"})
+        continue
     try:
         resp = handle_request(app, event)
         requests.post(RESPONSE_URL, json=resp)
