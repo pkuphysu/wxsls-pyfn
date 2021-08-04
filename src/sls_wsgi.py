@@ -84,11 +84,11 @@ def group_headers(headers):
 
 
 def encode_query_string(event):
-    multi = event.get(u"multiValueQueryStringParameters")
+    multi = event.get("multiValueQueryStringParameters")
     if multi:
         return url_encode(MultiDict((i, j) for i in multi for j in multi[i]))
     else:
-        return url_encode(event.get(u"queryString") or {})
+        return url_encode(event.get("queryString") or {})
 
 
 def handle_request(app, event, context=None):
@@ -96,7 +96,7 @@ def handle_request(app, event, context=None):
     #     print("Tencent Cloud Function warming event received, skipping handler")
     #     return {}
 
-    if u"multiValueHeaders" in event:
+    if "multiValueHeaders" in event:
         headers = Headers(event["multiValueHeaders"])
     else:
         headers = Headers(event["headers"])
@@ -108,8 +108,11 @@ def handle_request(app, event, context=None):
         "t",
         "1",
     ]
-    if u"apigw.tencentcs.com" in headers.get(u"Host", u"") and not strip_stage_path:
-        script_name = "/{}".format(event["requestContext"].get(u"stage", ""))
+    if (
+        headers.get("Host", "").endswith(".apigw.tencentcs.com")
+        and not strip_stage_path
+    ):
+        script_name = "/{}".format(event["requestContext"].get("stage", ""))
     else:
         script_name = ""
 
@@ -125,8 +128,8 @@ def handle_request(app, event, context=None):
         if path_info.startswith(script_name):
             path_info = path_info[len(script_name) :] or "/"
 
-    if u"body" in event:
-        body = event[u"body"] or ""
+    if "body" in event:
+        body = event["body"] or ""
     else:
         body = ""
 
@@ -137,28 +140,26 @@ def handle_request(app, event, context=None):
 
     environ = {
         "CONTENT_LENGTH": str(len(body)),
-        "CONTENT_TYPE": headers.get(u"Content-Type", ""),
+        "CONTENT_TYPE": headers.get("Content-Type", ""),
         "PATH_INFO": url_unquote(path_info),
         "QUERY_STRING": encode_query_string(event),
-        "REMOTE_ADDR": event["requestContext"]
-        .get(u"identity", {})
-        .get(u"sourceIp", ""),
+        "REMOTE_ADDR": event["requestContext"].get("identity", {}).get("sourceIp", ""),
         "REMOTE_USER": event["requestContext"]
-        .get(u"authorizer", {})
-        .get(u"principalId", ""),
+        .get("authorizer", {})
+        .get("principalId", ""),
         "REQUEST_METHOD": event["httpMethod"],
         "SCRIPT_NAME": script_name,
-        "SERVER_NAME": headers.get(u"Host", "lambda"),
-        "SERVER_PORT": headers.get(u"X-Forwarded-Port", "80"),
+        "SERVER_NAME": headers.get("Host", "lambda"),
+        "SERVER_PORT": headers.get("X-Forwarded-Port", "80"),
         "SERVER_PROTOCOL": "HTTP/1.1",
         "wsgi.errors": sys.stderr,
         "wsgi.input": BytesIO(body),
         "wsgi.multiprocess": False,
         "wsgi.multithread": False,
         "wsgi.run_once": False,
-        "wsgi.url_scheme": headers.get(u"X-Forwarded-Proto", "http"),
+        "wsgi.url_scheme": headers.get("X-Forwarded-Proto", "http"),
         "wsgi.version": (1, 0),
-        "serverless.authorizer": event["requestContext"].get(u"authorizer"),
+        "serverless.authorizer": event["requestContext"].get("authorizer"),
         "serverless.event": event,
         "serverless.context": context,
         # TODO: Deprecate the following entries, as they do not comply with the WSGI
@@ -168,7 +169,7 @@ def handle_request(app, event, context=None):
         #   These variables should be named using only lower-case letters, numbers,
         #   dots, and underscores, and should be prefixed with a name that is unique
         #   to the defining server or gateway.
-        "API_GATEWAY_AUTHORIZER": event["requestContext"].get(u"authorizer"),
+        "API_GATEWAY_AUTHORIZER": event["requestContext"].get("authorizer"),
         "event": event,
         "context": context,
     }
@@ -184,16 +185,16 @@ def handle_request(app, event, context=None):
 
     response = Response.from_app(app, environ)
 
-    returndict = {u"statusCode": response.status_code}
+    returndict = {"statusCode": response.status_code}
 
-    if u"multiValueHeaders" in event:
+    if "multiValueHeaders" in event:
         returndict["multiValueHeaders"] = group_headers(response.headers)
     else:
         returndict["headers"] = split_headers(response.headers)
 
     if event.get("requestContext").get("elb"):
         # If the request comes from ALB we need to add a status description
-        returndict["statusDescription"] = u"%d %s" % (
+        returndict["statusDescription"] = "%d %s" % (
             response.status_code,
             HTTP_STATUS_CODES[response.status_code],
         )

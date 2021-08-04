@@ -48,17 +48,17 @@
 
 工作流大致如下：
 
-1. 从 dev 新建 Git 分支
+1. 从 master 新建一个分支
 2. 在 `api` 下新建文件夹，模仿已有的功能写好业务代码。然后修改 `api/__init__.py`，在 `modules` 中加上新建的模块名称。
 3. 在 `tests/api/<模块名称>` 下新建测试文件，完成基本的 API 测试。
-4. 向 dev 分支提起 PR
-5. review 通过后，根据 commit 是否混乱，决定是 create merge commit 还是 squash merge
-6. 该分支历史使命已经结束，删除该分支以保持整洁
-7. 等待前端仓库也完成类似工作流
-8. 线上环境测试，汇总问题后，从 dev 新建分支进行修改
-9. 重复上一步，直至测试通过
-10. 通过 create merge commit 的方式 merge dev into master
-11. 功能使命结束，在 dev 上则将 `modules` 回复原样即可，适时如上 merge into master
+4. 如可以，在本地开启前端后端进行联合调试
+5. 【如有在线全真调试需求】从 master 新建 dev 分支
+6. 【如有在线全真调试需求】合并进 dev，调试 dev，汇总问题并修改
+7. 从 dev 或新建的分支向 master 发起 PR
+8. review 通过后，根据 commit 是否混乱，决定是 create merge commit 还是 squash merge
+9. 该新建分支与 dev 分支的历史使命已经结束，删除以保持整洁
+10. 如果上线后有问题，可以视时间紧迫与代码修改方便程度，选择直接在腾讯云在线修改代码还是重复以上步骤
+12. 功能使命结束，适时将 master 上的 `modules` 回复原样即可
 
 ## 数据库管理
 
