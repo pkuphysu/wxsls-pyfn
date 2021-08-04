@@ -1,4 +1,5 @@
 import os
+import sys
 
 import requests
 
@@ -24,7 +25,8 @@ requests.post(
 
 while True:
     event = requests.get(EVENT_URL).json()
-    print(f"Received {event}")
+    # Tencent does not catch stdout here
+    print(f"Received {event}", file=sys.stderr)
     try:
         resp = handle_request(app, event)
         requests.post(RESPONSE_URL, json=resp)
