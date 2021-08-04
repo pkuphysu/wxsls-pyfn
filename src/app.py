@@ -28,5 +28,8 @@ while True:
     try:
         resp = handle_request(app, event)
         requests.post(RESPONSE_URL, json=resp)
-    except Exception as e:
-        requests.post(ERROR_URL, json=dict(msg=str(e)))
+    except Exception:
+        import traceback
+
+        traceback.print_exc()
+        requests.post(ERROR_URL, json={"msg": "Error, see log"})
