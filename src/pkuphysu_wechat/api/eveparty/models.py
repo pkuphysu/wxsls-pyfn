@@ -25,7 +25,7 @@ class CJParticipant(db.Model):
 
     event = db.Column(db.String(32), default=EVENT, primary_key=True)
     open_id = db.Column(db.String(32), primary_key=True)
-    name = db.Column(db.Unicode(16, collation="utf8_bin"), nullable=False)
+    name = db.Column(db.String(16), nullable=False)
     stu_id = db.Column(db.String(32), nullable=False)
     investment = db.Column(db.String(32), nullable=False)
 
