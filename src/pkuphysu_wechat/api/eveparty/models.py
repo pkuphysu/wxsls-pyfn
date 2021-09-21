@@ -4,7 +4,7 @@ from pkuphysu_wechat import db
 
 PRIZE_COUNT = 3
 PRIZE_NAMES = ["一等奖", "二等奖", "三等奖"]
-EVENT = "example_event"
+EVENT = "eveparty"
 
 
 def get_user(f):

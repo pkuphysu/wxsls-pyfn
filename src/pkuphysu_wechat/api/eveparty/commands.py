@@ -38,7 +38,7 @@ def name(payload: str, message: TextMessage) -> str:
         return "格式不太对？请使用 help name 查看帮助"
     name, stu_id = match[0]
     CJParticipant.add_user(message.source, name, stu_id)
-    return "注册成功！可以用 invest 投点啦~\n" + "ps: 可通过输入 help invest 查看命令帮助"
+    return "注册成功！可以用 invest 投点啦~\n" + "ps: 可以通过输入 help invest 查看命令帮助"
 
 
 def create_invest():
