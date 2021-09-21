@@ -1,15 +1,12 @@
 import json
 
 from pkuphysu_wechat import db
-
-PRIZE_COUNT = 3
-PRIZE_NAMES = ["一等奖", "二等奖", "三等奖"]
-EVENT = "eveparty"
+from pkuphysu_wechat.config import settings
 
 
 def get_user(f):
     def func(cls, open_id, *args, **kargs):
-        user = cls.query.get({"event": EVENT, "open_id": open_id})
+        user = cls.query.get({"event": settings.eveparty.EVENT, "open_id": open_id})
         if user is None:
             return False
         resp = f(cls, user, *args, **kargs)
@@ -23,7 +20,7 @@ def get_user(f):
 class CJParticipant(db.Model):
     __tablename__ = "CJParticipant"
 
-    event = db.Column(db.String(32), default=EVENT, primary_key=True)
+    event = db.Column(db.String(32), default=settings.eveparty.EVENT, primary_key=True)
     open_id = db.Column(db.String(32), primary_key=True)
     name = db.Column(db.String(16), nullable=False)
     stu_id = db.Column(db.String(32), nullable=False)
@@ -36,7 +33,7 @@ class CJParticipant(db.Model):
                 open_id=open_id,
                 name=name,
                 stu_id=stu_id,
-                investment=json.dumps([1] * PRIZE_COUNT),
+                investment=json.dumps([1] * settings.eveparty.PRIZE_COUNT),
             )
         )
         db.session.commit()
@@ -57,5 +54,5 @@ class CJParticipant(db.Model):
     def to_cj_json(cls):
         return {
             user.name: json.loads(user.investment)
-            for user in cls.query.filter(cls.event == EVENT).all()
+            for user in cls.query.filter(cls.event == settings.eveparty.EVENT).all()
         }

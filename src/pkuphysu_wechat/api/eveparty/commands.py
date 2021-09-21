@@ -5,9 +5,10 @@ from logging import getLogger
 
 from werobot.messages.messages import TextMessage
 
+from pkuphysu_wechat.config import settings
 from pkuphysu_wechat.wechat.core import wechat_mgr
 
-from .models import PRIZE_COUNT, PRIZE_NAMES, CJParticipant
+from .models import CJParticipant
 
 logger = getLogger(__name__)
 wechat_mgr.command_reg.mark_default_closed("eveparty")
@@ -42,8 +43,8 @@ def name(payload: str, message: TextMessage) -> str:
 
 
 def create_invest():
-    prize_count = PRIZE_COUNT
-    prize_names = PRIZE_NAMES
+    prize_count = settings.eveparty.PRIZE_COUNT
+    prize_names = settings.eveparty.PRIZE_NAMES
     prize_letters = list(string.ascii_uppercase[:prize_count])
 
     help_str = f'''\
