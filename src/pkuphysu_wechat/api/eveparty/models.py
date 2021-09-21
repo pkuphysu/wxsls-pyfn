@@ -55,10 +55,7 @@ class CJParticipant(db.Model):
 
     @classmethod
     def to_cj_json(cls):
-        return [
-            {
-                "name": user.name,
-                "investment": json.loads(user.investment),
-            }
+        return {
+            user.name: json.loads(user.investment)
             for user in cls.query.filter(cls.event == EVENT).all()
-        ]
+        }
