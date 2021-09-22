@@ -30,7 +30,7 @@ def name(payload: str, message: TextMessage) -> str:
     name <姓名> <学号> | 设置姓名和学号
     需与校园卡上一致，否则无法领奖
     注意：只有现场的同学才能抽奖！
-        如："name 小明"
+        如："name 小明 2100000000"
     """
     if CJParticipant.get_user_name(message.source):
         return "您已设置过姓名！"
