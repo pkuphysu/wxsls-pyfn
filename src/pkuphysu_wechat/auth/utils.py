@@ -31,7 +31,9 @@ def token_required() -> str:
 
 def master_required():
     openid = token_required()
-    if openid not in settings.WECHAT.MASTER_IDS:
+    if openid not in settings.WECHAT.MASTER_IDS and not (
+        openid == "developmentopenid" and not settings.PRODUCTION
+    ):
         logger.info("%s tried to access admin resouces", openid)
         abort(respond_error(403, "NoHackMaster"))
 

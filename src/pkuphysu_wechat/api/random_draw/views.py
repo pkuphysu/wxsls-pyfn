@@ -24,6 +24,8 @@ def join():
 @bp.route("/all", methods=["GET"])
 def get_all():
     openid = token_required()
-    if openid not in settings.wechat.MASTER_IDS:
+    if openid not in settings.WECHAT.MASTER_IDS and not (
+        openid == "developmentopenid" and not settings.PRODUCTION
+    ):
         abort(404)
     return respond_success(data=[record.name for record in RandomDraw.query.all()])
