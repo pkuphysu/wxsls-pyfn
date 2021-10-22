@@ -60,6 +60,11 @@
       "sub_button": [
         {
           "type": "view",
+          "name": "综合指导课",
+          "url": "https://meetplan.phy.pku.edu.cn"
+        },
+        {
+          "type": "view",
           "name": "B116预约",
           "url": "http://bookb116.phy.pku.edu.cn/"
         },
