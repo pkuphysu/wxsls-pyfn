@@ -21,7 +21,7 @@ BANNED_HINT = """对不起，您的账号已被禁止发送祝福
 如有疑问，可尝试后台发送信息或找相关人员反馈。"""
 
 
-@wechat_mgr.command(keywords=["bless", "祝福", "祝"], groups=["sfblessing"])
+@wechat_mgr.command(keywords=("bless", "祝福", "祝"), groups=["sfblessing"])
 def bless(payload: str, message: TextMessage) -> str:
     """
     祝 <content> | 发送祝福
@@ -92,8 +92,12 @@ def whoami(message):
 
 @wechat_mgr.command(groups=["sfblessing"])
 @master
-def send(delta=1):
-    """send | 发送祝福@从click转过来的"""
+def send(payload: str, message: TextMessage):
+    """send | 发送祝福@从click转过来的 send 1"""
+    try:
+        delta = int(payload)
+    except:  # noqa
+        return f"输入{payload}，形式错误，请输入整数"
     blessings = SFBlessing.get_by_date(
         datetime.date.today() - datetime.timedelta(days=delta)
     )
