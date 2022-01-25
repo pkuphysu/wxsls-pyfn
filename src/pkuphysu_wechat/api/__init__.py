@@ -1,6 +1,6 @@
 from importlib import import_module
 
-modules = ["random_draw", "eveparty"]
+modules = ["random_draw", "eveparty", "sfblessing"]
 
 
 def init_app(app):
