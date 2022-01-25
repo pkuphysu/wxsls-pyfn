@@ -2,7 +2,8 @@
 This module is intended to encode user by a number.
 Ideally, the number should be the first blessing id sent by the user.
 """
-import math
+
+from functools import reduce
 
 # TIP: fold PARTS in your editor
 PARTS = [
@@ -91,7 +92,7 @@ PARTS = [
 ]
 
 
-N = math.prod(len(p) for p in PARTS)
+N = reduce(lambda x, y: x * y, [len(p) for p in PARTS])
 # Good prime! 3001 mod 26, 25*26, 24*25*26 gives different result!
 # NOTE: hard coded! different to different lenths of PARTS!
 P = 3001
