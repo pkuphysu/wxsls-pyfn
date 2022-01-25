@@ -10,7 +10,7 @@ url = 'https://pypi.tuna.tsinghua.edu.cn/simple'
 default = true
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.8.6"
 WeRoBot = "^1.13.1"
 Flask = "^2.0.0"
 command4bot = "^0.4.1"
