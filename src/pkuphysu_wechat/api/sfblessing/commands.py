@@ -102,6 +102,7 @@ def send(payload: str, message: TextMessage):
         datetime.date.today() - datetime.timedelta(days=delta)
     )
     counter = Counter(blessing.create_by for blessing in blessings)
+    ret = True
     for open_id, count in counter.items():
         blessings_except_mine = [
             blessing for blessing in blessings if blessing.create_by != open_id
@@ -119,6 +120,8 @@ def send(payload: str, message: TextMessage):
             )
         except:  # noqa
             logger.error("Blessing to %s not sent", open_id)
+            ret = False
+    return "发送成功！" if ret else "发送失败"
 
 
 @wechat_robot.key_click("blessing_reply")

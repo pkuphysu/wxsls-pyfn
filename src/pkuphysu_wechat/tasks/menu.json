@@ -77,6 +77,11 @@
           "type": "view",
           "name": "权益反馈",
           "url": "https://www.wjx.cn/vm/hPLYhni.aspx"
+        },
+        {
+          "type": "click",
+          "name": "查看祝福回复",
+          "key": "blessing_reply"
         }
       ]
     }
