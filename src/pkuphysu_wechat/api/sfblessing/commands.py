@@ -90,10 +90,56 @@ def whoami(message):
     return simple_cipher.encode_name(blessing_id)
 
 
+@wechat_mgr.command(keywords=["blessban"], groups=["sfblessing"])
+@master
+def bless_ban(payload: str, message: TextMessage):
+    """blessban | ban掉某openid，blessban openid1 openid2"""
+    ban_ids = payload.split()
+    ret = []
+    for ban_id in ban_ids:
+        try:
+            BlessBan.add_name(ban_id)
+            SFBlessing.remove_bless(person=ban_id)
+        except:  # noqa
+            logger.error("bless_ban %s failed", ban_id)
+            ret.append(ban_id)
+    return "以下openid禁止失败：\n" + "\n".join(ret) if ret else "ban successfully"
+
+
+@wechat_mgr.command(keywords=["blessunban"], groups=["sfblessing"])
+@master
+def bless_unban(payload: str, message: TextMessage):
+    """blessunban | unban某openid，unblessban openid1 openid2"""
+    unban_ids = payload.split()
+    ret = []
+    for unban_id in unban_ids:
+        try:
+            BlessBan.remove_name(unban_id)
+        except:  # noqa
+            logger.error("bless_unban %s failed", unban_id)
+            ret.append(unban_id)
+    return "以下openid解封失败：\n" + "\n".join(ret) if ret else "unban successfully"
+
+
+@wechat_mgr.command(keywords=["blessdelete"], groups=["sfblessing"])
+@master
+def bless_delete(payload: str, message: TextMessage):
+    """blessdelete | 删去某条祝福，blessdelete num1 num2"""
+    delete_ids = payload.split()
+    ret = []
+    for delete_id in delete_ids:
+        try:
+            SFBlessing.remove_bless(blessing_id=delete_id)
+        except:  # noqa
+            logger.error(f"bless_delete {delete_id} failed")
+            ret.append(str(delete_id))
+    return "以下祝福删除失败：\n" + "  ".join(ret) if ret else "删除成功"
+
+
 @wechat_mgr.command(groups=["sfblessing"])
 @master
 def send(payload: str, message: TextMessage):
-    """send | 发送祝福@从click转过来的 send 1"""
+    """send | 发送祝福@从click转过来的 send 1 1代表昨日"""
     try:
         delta = int(payload)
     except:  # noqa
