@@ -163,7 +163,7 @@ def send(payload: str, message: TextMessage):
         msg = (
             "快来看看收到的祝福吧！\n"
             + "\n".join(format_message(msg.create_by, msg.content) for msg in msgs)
-            + "\n如果还没领取红包封面的话，可以点击我领取啦~\n"
+            + "\n如果还没领取红包封面的话，可以点击下面的网址领取啦（一定要用手机版哟）~\n"
             + url
         )
         try:
