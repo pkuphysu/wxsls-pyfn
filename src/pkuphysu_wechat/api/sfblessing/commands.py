@@ -20,6 +20,10 @@ BANNED_HINT = """对不起，您的账号已被禁止发送祝福
 （一般情况下是多次发送无关或负面信息）。
 如有疑问，可尝试后台发送信息或找相关人员反馈。"""
 
+URL = r"""奖品来啦！可以点<a href = "https://support.weixin.qq.com/cgi-bin/"""
+URL += r"""mmsupport-bin/showredpacket?receiveuri=adHoOog7XGG&check_type=2"""
+URL += r"""#wechat_redirect">我</a>领取红包封面啦(一定要用手机点开哟~)~"""
+
 
 @wechat_mgr.command(keywords=("bless", "祝福", "祝"), groups=["sfblessing"])
 def bless(payload: str, message: TextMessage) -> str:
@@ -36,8 +40,12 @@ def bless(payload: str, message: TextMessage) -> str:
     open_id = message.source
     if BlessBan.is_name_baned(open_id):
         return BANNED_HINT
+    blessing_id = SFBlessing.get_first_bless_id_by(open_id)
     bless_record = SFBlessing.add_bless(open_id, payload)
-    return f"已收到您的祝福！编号为 {bless_record.blessing_id}"
+    msg = f"已收到您的祝福！编号为 {bless_record.blessing_id}"
+    if blessing_id is None:
+        msg += "\n" + URL
+    return msg
 
 
 @wechat_mgr.command(keywords=["reply", "re", "Re", "回复"], groups=["sfblessing"])
@@ -141,9 +149,7 @@ def bless_delete(payload: str, message: TextMessage):
 def send(payload: str, message: TextMessage):
     """send | 发送祝福@从click转过来的 send 1 1代表昨日"""
     try:
-        split = payload.split()
-        delta = int(split[0])
-        url = split[1]
+        delta = int(payload)
     except:  # noqa
         return f"输入{payload}，形式错误"
     blessings = SFBlessing.get_by_date(
@@ -160,16 +166,13 @@ def send(payload: str, message: TextMessage):
             min(5 * count, len(blessings_except_mine)),
         )
         msgs = random.sample(blessings_except_mine, num)
-        msg = (
-            "快来看看收到的祝福吧！\n"
-            + "\n".join(format_message(msg.create_by, msg.content) for msg in msgs)
-            + "\n如果还没领取红包封面的话，可以点击下面的网址领取啦（一定要用手机版哟）~\n"
-            + url
+        send_msg = "快来看看收到的祝福吧！\n" + "\n".join(
+            format_message(msg.create_by, msg.content) for msg in msgs
         )
         try:
             wechat_client.send_text_message(
                 open_id,
-                msg,
+                send_msg,
             )
         except:  # noqa
             logger.error("Blessing to %s not sent", open_id)
