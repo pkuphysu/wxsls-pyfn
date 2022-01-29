@@ -141,9 +141,11 @@ def bless_delete(payload: str, message: TextMessage):
 def send(payload: str, message: TextMessage):
     """send | 发送祝福@从click转过来的 send 1 1代表昨日"""
     try:
-        delta = int(payload)
+        split = payload.split()
+        delta = int(split[0])
+        url = split[1]
     except:  # noqa
-        return f"输入{payload}，形式错误，请输入整数"
+        return f"输入{payload}，形式错误"
     blessings = SFBlessing.get_by_date(
         datetime.date.today() - datetime.timedelta(days=delta)
     )
@@ -158,11 +160,16 @@ def send(payload: str, message: TextMessage):
             min(5 * count, len(blessings_except_mine)),
         )
         msgs = random.sample(blessings_except_mine, num)
+        msg = (
+            "快来看看收到的祝福吧！\n"
+            + "\n".join(format_message(msg.create_by, msg.content) for msg in msgs)
+            + "\n如果还没领取红包封面的话，可以点击我领取啦~\n"
+            + url
+        )
         try:
             wechat_client.send_text_message(
                 open_id,
-                "快来看看收到的祝福吧！\n"
-                + "\n".join(format_message(msg.create_by, msg.content) for msg in msgs),
+                msg,
             )
         except:  # noqa
             logger.error("Blessing to %s not sent", open_id)
