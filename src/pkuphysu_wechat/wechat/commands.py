@@ -9,6 +9,7 @@ from .models import AutoReply
 from .utils import check_master, get_similar_help_for_user, is_master_command, master
 
 logger = getLogger(__name__)
+wechat_mgr.command_reg.mark_default_closed("debug")
 
 
 @wechat_mgr.command
@@ -70,7 +71,7 @@ def help(payload, message: TextMessage):
     )
 
 
-@wechat_mgr.command
+@wechat_mgr.command(groups=["debug"])
 def openid(message: TextMessage) -> str:
     "openid | 返回您的 openid，debug 用"
     return message.source
