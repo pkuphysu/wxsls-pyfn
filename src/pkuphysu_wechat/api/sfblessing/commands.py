@@ -20,9 +20,9 @@ BANNED_HINT = """对不起，您的账号已被禁止发送祝福
 （一般情况下是多次发送无关或负面信息）。
 如有疑问，可尝试后台发送信息或找相关人员反馈。"""
 
-URL = r"""奖品来啦！可以点<a href = "https://support.weixin.qq.com/cgi-bin/"""
-URL += r"""mmsupport-bin/showredpacket?receiveuri=adHoOog7XGG&check_type=2"""
-URL += r"""#wechat_redirect">我</a>领取红包封面啦(一定要用手机点开哟~)~"""
+URL = r"""奖品来啦！可以<a href = "https://support.weixin.qq.com/cgi-bin/"""
+URL += r"""mmsupport-bin/showredpacket?receiveuri=dJ9jBfa09BQ&check_type=2"""
+URL += r"""#wechat_redirect">点我领取红包封面</a>啦(一定要用手机点开哟~)~"""
 
 
 @wechat_mgr.command(keywords=("bless", "祝福", "祝"), groups=["sfblessing"])
