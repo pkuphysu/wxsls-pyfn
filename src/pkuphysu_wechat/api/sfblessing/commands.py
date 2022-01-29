@@ -20,9 +20,9 @@ BANNED_HINT = """对不起，您的账号已被禁止发送祝福
 （一般情况下是多次发送无关或负面信息）。
 如有疑问，可尝试后台发送信息或找相关人员反馈。"""
 
-URL = r"""奖品来啦！可以<a href = "https://support.weixin.qq.com/cgi-bin/"""
-URL += r"""mmsupport-bin/showredpacket?receiveuri=dJ9jBfa09BQ&check_type=2"""
-URL += r"""#wechat_redirect">点我领取红包封面</a>啦(一定要用手机点开哟~)~"""
+COVER_URL = r"""奖品来啦！可以<a href = "https://support.weixin.qq.com/cgi-bin/"""
+COVER_URL += r"""mmsupport-bin/showredpacket?receiveuri=hfdRDU3eweY&check_type=2"""
+COVER_URL += r"""#wechat_redirect">点我领取红包封面</a>啦(一定要用手机点开哟~)~"""
 
 
 @wechat_mgr.command(keywords=("bless", "祝福", "祝"), groups=["sfblessing"])
@@ -44,7 +44,7 @@ def bless(payload: str, message: TextMessage) -> str:
     bless_record = SFBlessing.add_bless(open_id, payload)
     msg = f"已收到您的祝福！编号为 {bless_record.blessing_id}"
     if blessing_id is None:
-        msg += "\n" + URL
+        msg += "\n" + COVER_URL
     return msg
 
 
