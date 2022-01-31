@@ -13,7 +13,7 @@ from . import simple_cipher
 from .models import BlessBan, SFBackBlessing, SFBlessing, format_message
 
 logger = getLogger(__name__)
-wechat_mgr.command_reg.mark_default_closed("sfblessing")
+wechat_mgr.command_reg.mark_default_closed("sfblessing", "getcover")
 
 
 BANNED_HINT = """对不起，您的账号已被禁止发送祝福
@@ -21,11 +21,11 @@ BANNED_HINT = """对不起，您的账号已被禁止发送祝福
 如有疑问，可尝试后台发送信息或找相关人员反馈。"""
 
 COVER_URL = r"""奖品来啦！可以<a href = "https://support.weixin.qq.com/cgi-bin/"""
-COVER_URL += r"""mmsupport-bin/showredpacket?receiveuri=hfdRDU3eweY&check_type=2"""
+COVER_URL += r"""mmsupport-bin/showredpacket?receiveuri=pSJlkzH2LWT&check_type=2"""
 COVER_URL += r"""#wechat_redirect">点我领取红包封面</a>啦(一定要用手机点开哟~)~"""
 
 
-@wechat_mgr.command(keywords=("bless", "祝福", "祝"), groups=["sfblessing"])
+@wechat_mgr.command(keywords=("bless", "祝福", "祝"), groups=["sfblessing", "getcover"])
 def bless(payload: str, message: TextMessage) -> str:
     """
     祝 <content> | 发送祝福
