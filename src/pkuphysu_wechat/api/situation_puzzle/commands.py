@@ -36,22 +36,45 @@ def alter_puzzle(payload: str, message: TextMessage):
     return "更改成功"
 
 
-# “海龟汤”/
-# Puzzle.get_cover()
-
-# 询问关键词
-# 返回全部关键词 （可以单独写一个）判断锁与否？？？
-
+@wechat_mgr.command(keywords=["海龟汤"],groups=["situation_puzzle"])
+def get(payload:str,message:Textmessage):
+    li=payload.split()
+    try:
+        openid= message.source
+        if len(li)==1 :
+            if li[0]=="汤面":
+                cover=Puzzle.get_cover()
+                 return cover
+                
+            elif li[0]=="关键词":
+                keyword=Puzzle.get_keyword()
+                for i in keyword:
+                    if Puzzle.get_locked(Puzzle,i)==True:
+                        keyword.remove(i)
+                return keyword
+            
+            elif li[0]=="问题":
+                return Puzzle.get_questions()
+            
+            elif Puzzle.get_locked(li[0])==False or  li[0] in [i.keyword for i in PuzzleUnlock.query.filter(open_id==openid).all()]:
+                
+                return Puzzle.get_keyquestions(Puzzle,li[0])
+        elif len(li)==2 :
+            if Puzzle.get_locked(li[0])==False or  "%s %s"%(li[0],li[1]) in [i.question for i in PuzzleUnlock.query.filter(open_id==openid).all()]:
+                all= PuzzleDependence.query.all()
+                for i in all:
+                    if i.question=="%s %s"%(li[0],li[1]):
+                    
+                        PuzzleUnlock.add(PuzzleUnlock,openid,i.id)
+      
+                return Puzzle.get_clue(Puzzle,li[0],li[1])
+            else:
+                return "输入有误"
+        else:
+            return "输入有误"
+    except:
+        return "输入有误"
 # situationpuzzle [keyword] 询问某关键词
-# - 查看是否默认上锁 ->查看此人是否解锁
-
-# situationpuzzle [keyword] [A-Z] 询问某关键词
-# - 查看是否默认上锁 ->查看此人是否解锁
-# - 返回clue
-# - PuzzleDependence->拿id和openid PuzzleUnlock.add(?)
-
-# “回答问题”/
-# Puzzle.get_questions()
 
 # 注：所有返回None------>处理
 

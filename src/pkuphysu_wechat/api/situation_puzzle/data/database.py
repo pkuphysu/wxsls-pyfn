@@ -108,10 +108,28 @@ class Puzzle(db.Model):  # 存储当前谜语
         ).first()
         return column.locked == "T"
 
-    # 返回关键词
+    @classmethod
+    def get_keyword(cls):
+        column=cls.query.filter(
+        cls.line_type=="keyword"
+            and cls.ques_id=="A"
+        ).all()
+        li=[]
+        for i in column:
+            li.append(i.keyword)
+        return li
     # 所有不重复的默认不锁的关键词和默认锁的
 
-    # 询问关键词时返回问题
+    @classmethod
+    def get_keyquestions(cls,keyword:str):
+        column=cls.query.filter(
+        cls.line_type=="keyword"
+            and cls.keyword==keyword
+        ).all()
+        li=[]
+        for i in column:
+            li.append("%s %s:%s",%(keyword,i.ques_id,i.content))
+        return li
 
     @classmethod
     def get_clue(cls, keyword: str, ques_id: str) -> str:
@@ -144,9 +162,18 @@ class PuzzleDependence(db.Model):  # 存储当前谜语之间依赖
         for k, v in dependence.items():
             column = cls(question=k, keyword=v)
             db.session.add(column)
-            Puzzle.alter_default_status(k)
+            Puzzle.alter_default_status(v)
         db.session.commit()
+    @classmethod
+    def get_Kid(cls,keyword):
+        column=cls.query.filter(
+        cls.keyword==keyword
+        ).first()
+        return column.id
+    @classmethod
+    def get_Qid(cls,question):
+        column=cls.query.filter(
+        cls.question==question
+        ).first()
+        return column.id
 
-    # 输入某被锁的关键词 返回id
-
-    # 输入某锁定其他关键词的问题 返回id
