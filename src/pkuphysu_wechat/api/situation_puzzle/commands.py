@@ -1,3 +1,4 @@
+from msilib.schema import Error
 import re
 from logging import getLogger
 
@@ -39,44 +40,53 @@ def alter_puzzle(payload: str, message: TextMessage):
 @wechat_mgr.command(keywords=["海龟汤"],groups=["situation_puzzle"])
 def get(payload:str,message:Textmessage):
     li=payload.split()
+    openid= message.source
     try:
-        openid= message.source
         if len(li)==1 :
             if li[0]=="汤面":
                 cover=Puzzle.get_cover()
-                 return cover
+                return cover
                 
             elif li[0]=="关键词":
                 keyword=Puzzle.get_keyword()
-                for i in keyword:
-                    if Puzzle.get_locked(Puzzle,i)==True:
+                for item in keyword:
+                    if Puzzle.get_locked(i)==True:
                         keyword.remove(i)
-                return keyword
-            
+                return " ".join(keyword)
+
             elif li[0]=="问题":
                 return Puzzle.get_questions()
             
-            elif Puzzle.get_locked(li[0])==False or  li[0] in [i.keyword for i in PuzzleUnlock.query.filter(open_id==openid).all()]:
-                
-                return Puzzle.get_keyquestions(Puzzle,li[0])
-        elif len(li)==2 :
-            if Puzzle.get_locked(li[0])==False or  "%s %s"%(li[0],li[1]) in [i.question for i in PuzzleUnlock.query.filter(open_id==openid).all()]:
-                all= PuzzleDependence.query.all()
-                for i in all:
-                    if i.question=="%s %s"%(li[0],li[1]):
-                    
-                        PuzzleUnlock.add(PuzzleUnlock,openid,i.id)
-      
-                return Puzzle.get_clue(Puzzle,li[0],li[1])
+            elif Puzzle.get_locked(li[0])==False:
+                return "\n".join(Puzzle.get_keyquestions())
+            elif Puzzle.get_locked(li[0])==True:
+                id=PuzzleDependence.get_Kid(li[0])
+                if PuzzleUnlock.check(openid,id)==True:
+                    return "\n".join(Puzzle.get_keyquestions())
             else:
-                return "输入有误"
-        else:
-            return "输入有误"
-    except:
-        return "输入有误"
-# situationpuzzle [keyword] 询问某关键词
+                return f"您的输入是{payload}，输入有误"
+                
 
-# 注：所有返回None------>处理
+        elif len(li)==2 :
+            if Puzzle.get_locked(li[0])==False :
+                all= PuzzleDependence.query.all()
+                for item in all:
+                    if item.question=="%s %s"%(li[0],li[1]):
+                        PuzzleUnlock.add(openid,item.id)
+                return Puzzle.get_clue(li[0],li[1])
+            elif Puzzle.get_locked(li[0])==True:
+                id=PuzzleDependence.get_Kid(li[0])
+                if PuzzleUnlock.check(openid,id)==True:
+                    all= PuzzleDependence.query.all()
+                for item in all:
+                    if item.question=="%s %s"%(li[0],li[1]):
+                        PuzzleUnlock.add(openid,item.id)
+                return Puzzle.get_clue(li[0],li[1])
+
+        return f"您的输入是{payload}，输入有误"
+    except:
+        res= f"您的输入是{payload}，输入有误"
+
 
 
 @wechat_mgr.command(keywords=["answerpuzzle", "海龟汤回答"], groups=["situation_puzzle"])

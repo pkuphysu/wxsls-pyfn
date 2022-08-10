@@ -8,7 +8,7 @@
 
 ## 流程
 
-1. 玩家输入关键词：海龟汤（或situation_puzzle）
+1. 玩家输入关键词：海龟汤 汤面（或situation_puzzle 汤面）
 返回谜面
 2. 玩家输入关键词：海龟汤 关键词（或situation_puzzle 关键词）
 返回关键词
