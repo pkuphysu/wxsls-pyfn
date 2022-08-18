@@ -112,26 +112,23 @@ class Puzzle(db.Model):  # 存储当前谜语
 
     @classmethod
     def get_keyword(cls):
-        column=cls.query.filter(
-        cls.line_type=="keyword"
-            and cls.ques_id=="A"
+        columns = cls.query.filter(
+            cls.line_type == "keyword" and cls.ques_id == "A"
         ).all()
-        li=[]
-        for i in column:
-            li.append(i.keyword)
-        return li
+        keywords = [column.keyword for column in columns]
+        return keywords
+
     # 所有不重复的默认不锁的关键词和默认锁的
 
     @classmethod
-    def get_keyquestions(cls,keyword:str):
-        column=cls.query.filter(
-        cls.line_type=="keyword"
-            and cls.keyword==keyword
+    def get_keyquestions(cls, keyword: str):
+        columns = cls.query.filter(
+            cls.line_type == "keyword" and cls.keyword == keyword
         ).all()
-        li=[]
-        for i in column:
-            li.append("%s %s:%s"%(keyword,i.ques_id,i.content))
-        return li
+        questions = []
+        for column in columns:
+            questions.append("%s %s:%s" % (keyword, column.ques_id, column.content))
+        return questions
 
     @classmethod
     def get_clue(cls, keyword: str, ques_id: str) -> str:
@@ -168,20 +165,15 @@ class PuzzleDependence(db.Model):  # 存储当前谜语之间依赖
         db.session.commit()
 
     @classmethod
-    def get_Kid(cls,keyword):
-        column=cls.query.filter(
-        cls.keyword==keyword
-        ).first()
+    def get_Kid(cls, keyword):
+        column = cls.query.filter(cls.keyword == keyword).first()
         if column is not None:
             return column.id
         return None
 
     @classmethod
-    def get_Qid(cls,question):
-        column=cls.query.filter(
-        cls.question==question
-        ).first()
+    def get_Qid(cls, question):
+        column = cls.query.filter(cls.question == question).first()
         if column is not None:
             return column.id
         return None
-
