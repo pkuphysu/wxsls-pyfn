@@ -36,57 +36,59 @@ def alter_puzzle(payload: str, message: TextMessage):
     return "更改成功"
 
 
-@wechat_mgr.command(keywords=["海龟汤"],groups=["situation_puzzle"])
-def get(payload:str,message:Textmessage):
-    li=payload.split()
-    openid= message.source
+@wechat_mgr.command(keywords=["海龟汤"], groups=["situation_puzzle"])
+def get(payload: str, message: TextMessage):
+    payloads = payload.split()
+    openid = message.source
     try:
-        if len(li)==1 :
-            if li[0]=="汤面":
-                cover=Puzzle.get_cover()
+        if len(payloads) == 1:
+            if payloads[0] == "汤面":
+                cover = Puzzle.get_cover()
                 return cover
-                
-            elif li[0]=="关键词":
-                keyword=Puzzle.get_keyword()
+
+            elif payloads[0] == "关键词":
+                keyword = Puzzle.get_keyword()
                 for item in keyword:
-                    if Puzzle.get_locked(item)==True:
+                    if Puzzle.get_locked(item) is True:
                         keyword.remove(item)
                 return " ".join(keyword)
 
-            elif li[0]=="问题":
+            elif payloads[0] == "问题":
                 return Puzzle.get_questions()
-            
-            elif Puzzle.get_locked(li[0])==False:
+
+            elif Puzzle.get_locked(payloads[0]) is False:
                 return "\n".join(Puzzle.get_keyquestions())
-            elif Puzzle.get_locked(li[0])==True:
-                id=PuzzleDependence.get_Kid(li[0])
-                if PuzzleUnlock.check(openid,id)==True:
+            elif Puzzle.get_locked(payloads[0]) is True:
+                dependence_id = PuzzleDependence.get_Kid(payloads[0])
+                if PuzzleUnlock.check(openid, dependence_id) is True:
                     return "\n".join(Puzzle.get_keyquestions())
             else:
                 return f"您的输入是{payload}，输入有误"
-                
 
-        elif len(li)==2 :
-            if Puzzle.get_locked(li[0])==False :
-                id=PuzzleDependence.get_Qid("%s %s"%(li[0],li[1]))
-                if id is not None:
-                    PuzzleUnlock.add(openid,id)
-                return Puzzle.get_clue(li[0],li[1])
+        elif len(payloads) == 2:
+            if Puzzle.get_locked(payloads[0]) is False:
+                dependence_id = PuzzleDependence.get_Qid(
+                    "%s %s" % (payloads[0], payloads[1])
+                )
+                if dependence_id is not None:
+                    PuzzleUnlock.add(openid, dependence_id)
+                return Puzzle.get_clue(payloads[0], payloads[1])
 
-            elif Puzzle.get_locked(li[0])==True:
-                id=PuzzleDependence.get_Kid(li[0])
-                if PuzzleUnlock.check(openid,id)==True:
+            elif Puzzle.get_locked(payloads[0]) is True:
+                dependence_id = PuzzleDependence.get_Kid(payloads[0])
+                if PuzzleUnlock.check(openid, dependence_id) is True:
 
-                    id=PuzzleDependence.get_Qid("%s %s"%(li[0],li[1]))
-                    if id is not None:
-                        PuzzleUnlock.add(openid,id)
+                    dependence_id = PuzzleDependence.get_Qid(
+                        "%s %s" % (payloads[0], payloads[1])
+                    )
+                    if dependence_id is not None:
+                        PuzzleUnlock.add(openid, dependence_id)
 
-                    return Puzzle.get_clue(li[0],li[1])
+                    return Puzzle.get_clue(payloads[0], payloads[1])
 
         return f"您的输入是{payload}，输入有误"
-    except: # noqa
+    except:  # noqa
         return f"您的输入是{payload}，输入有误"
-
 
 
 @wechat_mgr.command(keywords=["answerpuzzle", "海龟汤回答"], groups=["situation_puzzle"])
