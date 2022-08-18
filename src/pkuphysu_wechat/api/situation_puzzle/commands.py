@@ -1,4 +1,3 @@
-from msilib.schema import Error
 import re
 from logging import getLogger
 
@@ -50,8 +49,8 @@ def get(payload:str,message:Textmessage):
             elif li[0]=="关键词":
                 keyword=Puzzle.get_keyword()
                 for item in keyword:
-                    if Puzzle.get_locked(i)==True:
-                        keyword.remove(i)
+                    if Puzzle.get_locked(item)==True:
+                        keyword.remove(item)
                 return " ".join(keyword)
 
             elif li[0]=="问题":
@@ -69,23 +68,24 @@ def get(payload:str,message:Textmessage):
 
         elif len(li)==2 :
             if Puzzle.get_locked(li[0])==False :
-                all= PuzzleDependence.query.all()
-                for item in all:
-                    if item.question=="%s %s"%(li[0],li[1]):
-                        PuzzleUnlock.add(openid,item.id)
+                id=PuzzleDependence.get_Qid("%s %s"%(li[0],li[1]))
+                if id is not None:
+                    PuzzleUnlock.add(openid,id)
                 return Puzzle.get_clue(li[0],li[1])
+
             elif Puzzle.get_locked(li[0])==True:
                 id=PuzzleDependence.get_Kid(li[0])
                 if PuzzleUnlock.check(openid,id)==True:
-                    all= PuzzleDependence.query.all()
-                for item in all:
-                    if item.question=="%s %s"%(li[0],li[1]):
-                        PuzzleUnlock.add(openid,item.id)
-                return Puzzle.get_clue(li[0],li[1])
+
+                    id=PuzzleDependence.get_Qid("%s %s"%(li[0],li[1]))
+                    if id is not None:
+                        PuzzleUnlock.add(openid,id)
+
+                    return Puzzle.get_clue(li[0],li[1])
 
         return f"您的输入是{payload}，输入有误"
-    except:
-        res= f"您的输入是{payload}，输入有误"
+    except: # noqa
+        return f"您的输入是{payload}，输入有误"
 
 
 

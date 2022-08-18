@@ -106,7 +106,9 @@ class Puzzle(db.Model):  # 存储当前谜语
         column = cls.query.filter(
             cls.line_type == "keyword" and cls.keyword == keyword
         ).first()
-        return column.locked == "T"
+        if column is not None:
+            return column.locked == "T"
+        return None
 
     @classmethod
     def get_keyword(cls):
@@ -164,16 +166,22 @@ class PuzzleDependence(db.Model):  # 存储当前谜语之间依赖
             db.session.add(column)
             Puzzle.alter_default_status(v)
         db.session.commit()
+
     @classmethod
     def get_Kid(cls,keyword):
         column=cls.query.filter(
         cls.keyword==keyword
         ).first()
-        return column.id
+        if column is not None:
+            return column.id
+        return None
+
     @classmethod
     def get_Qid(cls,question):
         column=cls.query.filter(
         cls.question==question
         ).first()
-        return column.id
+        if column is not None:
+            return column.id
+        return None
 
