@@ -57,13 +57,13 @@ def get(payload: str, message: TextMessage):
                 return Puzzle.get_questions()
 
             elif Puzzle.get_locked(payloads[0]) is False:
-                return "\n".join(Puzzle.get_keyquestions())
+                return "\n".join(Puzzle.get_keyquestions(payloads[0]))
             elif Puzzle.get_locked(payloads[0]) is True:
                 dependence_id = PuzzleDependence.get_Kid(payloads[0])
                 if PuzzleUnlock.check(openid, dependence_id) is True:
-                    return "\n".join(Puzzle.get_keyquestions())
+                    return "\n".join(Puzzle.get_keyquestions(payloads[0]))
             else:
-                return f"您的输入是{payload}，输入有误"
+                return f"您的输入是「{payload}」，输入有误"
 
         elif len(payloads) == 2:
             if Puzzle.get_locked(payloads[0]) is False:
@@ -86,9 +86,9 @@ def get(payload: str, message: TextMessage):
 
                     return Puzzle.get_clue(payloads[0], payloads[1])
 
-        return f"您的输入是{payload}，输入有误"
+        return f"您的输入是「{payload}」，输入有误"
     except:  # noqa
-        return f"您的输入是{payload}，输入有误"
+        return f"您的输入是「{payload}」，输入有误"
 
 
 @wechat_mgr.command(keywords=["answerpuzzle", "海龟汤回答"], groups=["situation_puzzle"])
@@ -96,7 +96,7 @@ def answer_puzzle(payload: str, message: TextMessage):
     answer = Puzzle.get_answers()
     explanation = Puzzle.get_explanation()
     if not re.match(r"^(\d[A-Z])+$", payload):
-        return f"您输入了:{payload}，格式错误，请认真阅读说明"
+        return f"您输入了「{payload}」，格式错误，请认真阅读说明"
     # 加上一些常见错误，比如大小写的比对
     if payload == answer:
         openid = message.source

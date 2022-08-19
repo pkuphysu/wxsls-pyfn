@@ -29,7 +29,7 @@ class Puzzle(db.Model):  # 存储当前谜语
         db.session.add(cover)
         questions = cls(line_type="questions", content=puzzle["questions"], locked="F")
         db.session.add(questions)
-        answers = cls(line_type="answers", content=puzzle["answers"], locked="F")
+        answers = cls(line_type="answers", content=puzzle["answer"], locked="F")
         db.session.add(answers)
         explanation = cls(
             line_type="explanation", content=puzzle["explanation"], locked="F"
@@ -93,7 +93,7 @@ class Puzzle(db.Model):  # 存储当前谜语
     @classmethod
     def alter_default_status(cls, keyword: str):
         columns = cls.query.filter(
-            cls.line_type == "keyword" and cls.keyword == keyword
+            cls.line_type == "keyword", cls.keyword == keyword
         ).all()
         for col in columns:
             col.locked = "T"
@@ -104,7 +104,7 @@ class Puzzle(db.Model):  # 存储当前谜语
     def get_locked(cls, keyword: str) -> bool:
         """返回某关键词是否默认上锁"""
         column = cls.query.filter(
-            cls.line_type == "keyword" and cls.keyword == keyword
+            cls.line_type == "keyword", cls.keyword == keyword
         ).first()
         if column is not None:
             return column.locked == "T"
@@ -112,9 +112,7 @@ class Puzzle(db.Model):  # 存储当前谜语
 
     @classmethod
     def get_keyword(cls):
-        columns = cls.query.filter(
-            cls.line_type == "keyword" and cls.ques_id == "A"
-        ).all()
+        columns = cls.query.filter(cls.line_type == "keyword", cls.ques_id == "A").all()
         keywords = [column.keyword for column in columns]
         return keywords
 
@@ -123,7 +121,7 @@ class Puzzle(db.Model):  # 存储当前谜语
     @classmethod
     def get_keyquestions(cls, keyword: str):
         columns = cls.query.filter(
-            cls.line_type == "keyword" and cls.keyword == keyword
+            cls.line_type == "keyword", cls.keyword == keyword
         ).all()
         questions = []
         for column in columns:
@@ -136,9 +134,7 @@ class Puzzle(db.Model):  # 存储当前谜语
         拿关键词(keyword)和问题代码(ques_id,应该是[ABCD]的形式）换答案
         """
         column = cls.query.filter(
-            cls.line_type == "clue"
-            and cls.keyword == keyword
-            and cls.ques_id == ques_id
+            cls.line_type == "clue", cls.keyword == keyword, cls.ques_id == ques_id
         ).first()
         return column.content
 
