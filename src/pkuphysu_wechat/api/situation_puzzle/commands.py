@@ -9,6 +9,7 @@ from pkuphysu_wechat.wechat.utils import master
 from .data import DEPENDENCE_DATA, PUZZLE_DATA
 from .data.database import Puzzle, PuzzleDependence
 from .models import PuzzleUnlock
+from .data.database import rule
 
 logger = getLogger(__name__)
 wechat_mgr.command_reg.mark_default_closed("situation_puzzle")
@@ -44,17 +45,17 @@ def get(payload: str, message: TextMessage):
         if len(payloads) == 1:
             if payloads[0] == "汤面":
                 cover = Puzzle.get_cover()
-                return cover
-
-            elif payloads[0] == "关键词":
                 keyword = Puzzle.get_keyword()
                 for item in keyword:
                     if Puzzle.get_locked(item) is True:
                         keyword.remove(item)
-                return " ".join(keyword)
+                return cover+"\n"+"关键词："+" ".join(keyword)
 
             elif payloads[0] == "问题":
-                return Puzzle.get_questions()
+                return Puzzle.get_questions()+"\n"+"回答格式（例）：海龟汤回答 1A2A"
+            
+            elif payloads[0]=="规则":
+                return rule
 
             elif Puzzle.get_locked(payloads[0]) is False:
                 return "\n".join(Puzzle.get_keyquestions(payloads[0]))
