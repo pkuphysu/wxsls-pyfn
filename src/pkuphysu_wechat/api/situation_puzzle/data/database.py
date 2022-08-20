@@ -1,5 +1,12 @@
 from pkuphysu_wechat import db
 
+RULE = "1. 玩家输入关键词：海龟汤 汤面（或situation_puzzle 汤面）\n返回谜面和关键词\n\
+        2. 玩家输入关键词：海龟汤 皮特 （或situation_puzzle 皮特）\n返回所有可问的问题\n3. \
+        玩家输入关键词：海龟汤 皮特 A （或situation_puzzle 皮特 A）\n返回此问题答案以及一\
+        些提示\n4. 玩家输入关键词：回答问题\n返回要回答的问题\n5. 玩家输入关键词：海龟汤回答\
+        （或 answerpuzzle）\n返回回答正误与谜底\n6. 玩家输入关键词：海龟汤 规则\
+        （或situation_puzzle 规则）\n返回输入规则"
+
 
 class Puzzle(db.Model):  # 存储当前谜语
     __tablename__ = "Puzzle"
@@ -173,4 +180,3 @@ class PuzzleDependence(db.Model):  # 存储当前谜语之间依赖
         if column is not None:
             return column.id
         return None
-rule = "1. 玩家输入关键词：海龟汤 汤面（或situation_puzzle 汤面）\n返回谜面和关键词\n2. 玩家输入关键词：海龟汤 皮特 （或situation_puzzle 皮特）\n返回所有可问的问题\n3. 玩家输入关键词：海龟汤 皮特 A （或situation_puzzle 皮特 A）\n返回此问题答案以及一些提示\n4. 玩家输入关键词：回答问题\n返回要回答的问题\n5. 玩家输入关键词：海龟汤回答（或 answerpuzzle）\n返回回答正误与谜底\n6. 玩家输入关键词：海龟汤 规则（或situation_puzzle 规则）\n返回输入规则"

@@ -7,7 +7,7 @@ from pkuphysu_wechat.wechat.core import wechat_mgr
 from pkuphysu_wechat.wechat.utils import master
 
 from .data import DEPENDENCE_DATA, PUZZLE_DATA
-from .data.database import Puzzle, PuzzleDependence,rule
+from .data.database import RULE, Puzzle, PuzzleDependence
 from .models import PuzzleUnlock
 
 logger = getLogger(__name__)
@@ -52,9 +52,9 @@ def get(payload: str, message: TextMessage):
 
             elif payloads[0] == "问题":
                 return Puzzle.get_questions() + "\n" + "回答格式（例）：海龟汤回答 1A2A"
-            
-            elif payloads[0]=="规则":
-                return rule
+
+            elif payloads[0] == "规则":
+                return RULE
 
             elif Puzzle.get_locked(payloads[0]) is False:
                 return "\n".join(Puzzle.get_keyquestions(payloads[0]))
