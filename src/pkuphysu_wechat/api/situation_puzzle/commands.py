@@ -18,8 +18,8 @@ wechat_mgr.command_reg.mark_default_closed("situation_puzzle")
 @master
 def alter_puzzle(payload: str, message: TextMessage):
     """
-    alterpuzzle | 从本目录下的data/puzzle.json和
-    data/dependence.json更换海龟汤内容 alterpuzzle [0-9]
+    alterpuzzle | 更换谜题
+    从本目录下的data/puzzle.json和data/dependence.json更换海龟汤内容 alterpuzzle [0-9]
     """
     if not re.match(r"^\d$", payload):
         return f"输入{payload}，格式错误，请认真阅读说明"
@@ -93,6 +93,10 @@ def get(payload: str, message: TextMessage):
 
 @wechat_mgr.command(keywords=["answerpuzzle", "海龟汤回答"], groups=["situation_puzzle"])
 def answer_puzzle(payload: str, message: TextMessage):
+    """
+    answerpuzzle <问题答案> |回答海龟汤的问题
+    答案格式应为数字加大写字母，中间没有空格，也应该按顺序输入答案，例如：1A2B
+    """
     answer = Puzzle.get_answers()
     explanation = Puzzle.get_explanation()
     if not re.match(r"^(\d[A-Z])+$", payload):
