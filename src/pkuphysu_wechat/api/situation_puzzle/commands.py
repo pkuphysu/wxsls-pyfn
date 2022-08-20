@@ -36,8 +36,12 @@ def alter_puzzle(payload: str, message: TextMessage):
     return "更改成功"
 
 
-@wechat_mgr.command(keywords=["海龟汤"], groups=["situation_puzzle"])
+@wechat_mgr.command(keywords=["海龟汤","situation_puzzle"], groups=["situation_puzzle"])
 def get(payload: str, message: TextMessage):
+    """
+    situation_puzzle |询问汤面、问题、规则、查看某关键词的问题
+    具体规则输入"海龟汤 规则"查看，别忘了空格哦
+    """
     payloads = payload.split()
     openid = message.source
     try:
@@ -95,7 +99,7 @@ def get(payload: str, message: TextMessage):
 def answer_puzzle(payload: str, message: TextMessage):
     """
     answerpuzzle <问题答案> |回答海龟汤的问题
-    答案格式应为数字加大写字母，中间没有空格，也应该按顺序输入答案，例如：1A2B
+    答案格式应为数字加大写字母，中间没有空格，也应该按顺序输入答案，例如：海龟汤回答 1A2B
     """
     answer = Puzzle.get_answers()
     explanation = Puzzle.get_explanation()
