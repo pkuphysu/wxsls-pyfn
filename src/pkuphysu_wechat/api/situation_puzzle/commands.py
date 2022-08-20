@@ -51,7 +51,7 @@ def get(payload: str, message: TextMessage):
                 return cover + "\n" + "关键词：" + " ".join(keyword)
 
             elif payloads[0] == "问题":
-                return Puzzle.get_questions() + "\n" + "回答格式（例）：海龟汤回答 1A2A"
+                return Puzzle.get_questions() + "\n" + "回答格式（例）：\n海龟汤回答 1A2A"
 
             elif payloads[0] == "规则":
                 return RULE
