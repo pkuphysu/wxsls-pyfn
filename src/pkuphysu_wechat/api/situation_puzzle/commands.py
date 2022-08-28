@@ -36,7 +36,7 @@ def alter_puzzle(payload: str, message: TextMessage):
     return "更改成功"
 
 
-@wechat_mgr.command(keywords=["海龟汤","situation_puzzle"], groups=["situation_puzzle"])
+@wechat_mgr.command(keywords=["海龟汤", "situation_puzzle"], groups=["situation_puzzle"])
 def get(payload: str, message: TextMessage):
     """
     situation_puzzle |询问汤面、问题、规则、查看某关键词的问题
