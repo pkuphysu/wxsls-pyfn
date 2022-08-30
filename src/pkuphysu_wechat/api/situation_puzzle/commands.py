@@ -8,7 +8,7 @@ from pkuphysu_wechat.wechat.utils import master
 
 from .data import DEPENDENCE_DATA, PUZZLE_DATA
 from .data.database import RULE, Puzzle, PuzzleDependence
-from .models import PuzzleUnlock
+from .models import PuzzleUnlock,PuzzleReview
 
 logger = getLogger(__name__)
 wechat_mgr.command_reg.mark_default_closed("situation_puzzle")
@@ -109,5 +109,18 @@ def answer_puzzle(payload: str, message: TextMessage):
     if payload == answer:
         openid = message.source
         PuzzleUnlock.clear_personal_information(openid)
-        return explanation
+        return explanation+"\n"
     return "回答有误呀！请重新尝试~"
+
+@wechat_mgr.command(keywords=["reviewpuzzle", "海龟汤评论"], groups=["situation_puzzle"])
+def review_puzzle(payload: str, message: TextMessage):
+    """
+    reviewpuzzle<海龟汤评论>|请您对海龟汤的内容或者形式给出建议
+    例如：
+    海龟汤评论 这个海龟汤真下饭，就是题目多了点
+    """
+    if len(payload) > 100:
+        return "字数太多了[Respect]建议精简一些到100字以内哦"
+    open_id = message.source
+    PuzzleReview.add(open_id, payload)
+    return f"已收到您的建议！感谢您的支持"

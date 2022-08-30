@@ -35,3 +35,15 @@ class PuzzleUnlock(db.Model):
         for record in lst:
             db.session.delete(cls.query.get(record.id))
         db.session.commit()
+
+class PuzzleReview(db.Model):
+    __tablename__ = "PuzzleReview"
+    id = db.Column(db.Integer, primary_key=True)
+    open_id = db.Column(db.String(32), nullable=False)
+    review = db.Column(db.String(256), nullable=False)
+
+    @classmethod
+    def add(cls,openid:str,payload:str):
+        col = cls(open_id=openid, review=payload)
+        db.session.add(col)
+        db.session.commit()
