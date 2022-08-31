@@ -8,7 +8,7 @@ from pkuphysu_wechat.wechat.utils import master
 
 from .data import DEPENDENCE_DATA, PUZZLE_DATA
 from .data.database import RULE, Puzzle, PuzzleDependence
-from .models import PuzzleUnlock,PuzzleReview
+from .models import PuzzleReview, PuzzleUnlock
 
 logger = getLogger(__name__)
 wechat_mgr.command_reg.mark_default_closed("situation_puzzle")
@@ -36,7 +36,7 @@ def alter_puzzle(payload: str, message: TextMessage):
     return "更改成功"
 
 
-@wechat_mgr.command(keywords=["海龟汤","situation_puzzle"], groups=["situation_puzzle"])
+@wechat_mgr.command(keywords=["海龟汤", "situation_puzzle"], groups=["situation_puzzle"])
 def get(payload: str, message: TextMessage):
     """
     situation_puzzle |询问汤面、问题、规则、查看某关键词的问题
@@ -109,8 +109,9 @@ def answer_puzzle(payload: str, message: TextMessage):
     if payload == answer:
         openid = message.source
         PuzzleUnlock.clear_personal_information(openid)
-        return explanation+"\n"
+        return explanation + "\n"
     return "回答有误呀！请重新尝试~"
+
 
 @wechat_mgr.command(keywords=["reviewpuzzle", "海龟汤评论"], groups=["situation_puzzle"])
 def review_puzzle(payload: str, message: TextMessage):
@@ -123,4 +124,4 @@ def review_puzzle(payload: str, message: TextMessage):
         return "字数太多了[Respect]建议精简一些到100字以内哦"
     open_id = message.source
     PuzzleReview.add(open_id, payload)
-    return f"已收到您的建议！感谢您的支持"
+    return "已收到您的建议！感谢您的支持"
