@@ -6,8 +6,8 @@ from werobot.messages.messages import TextMessage
 from pkuphysu_wechat.wechat.core import wechat_mgr
 from pkuphysu_wechat.wechat.utils import master
 
-from .data import DEPENDENCE_DATA, PUZZLE_DATA
-from .data.database import RULE, Puzzle, PuzzleDependence
+from .data import DEPENDENCE_DATA, PUZZLE_DATA, RULE
+from .data.database import Puzzle, PuzzleDependence
 from .models import PuzzleReview, PuzzleUnlock
 
 logger = getLogger(__name__)
