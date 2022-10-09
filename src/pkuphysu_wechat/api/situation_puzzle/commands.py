@@ -67,7 +67,7 @@ def get(payload: str, message: TextMessage):
                 if PuzzleUnlock.check(openid, dependence_id) is True:
                     return "\n".join(Puzzle.get_keyquestions(payloads[0]))
             else:
-                return f"您的输入是「{payload}」，输入有误"
+                return f"您的输入是「{payload}」，输入有误."
 
         elif len(payloads) == 2:
             if Puzzle.get_locked(payloads[0]) is False:
