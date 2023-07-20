@@ -21,7 +21,8 @@ def alter_puzzle(payload: str, message: TextMessage):
     alterpuzzle | 更换谜题
     从本目录下的data/puzzle.json和data/dependence.json更换海龟汤内容 alterpuzzle [0-9]
     """
-    if not re.match(r"^\d$", payload):
+    #if not re.match(r"^\d$", payload):
+    if not 0<int(payload)<=17:
         return f"输入{payload}，格式错误，请认真阅读说明"
     try:
         puzzle = PUZZLE_DATA[payload]
@@ -49,10 +50,11 @@ def get(payload: str, message: TextMessage):
             if payloads[0] == "汤面":
                 cover = Puzzle.get_cover()
                 keyword = Puzzle.get_keyword()
+                keywords = keyword.copy()
                 for item in keyword:
                     if Puzzle.get_locked(item) is True:
-                        keyword.remove(item)
-                return cover + "\n" + "关键词：" + " ".join(keyword)
+                        keywords.remove(item)
+                return cover + "\n" + "关键词：" + " ".join(keywords)
 
             elif payloads[0] == "问题":
                 return Puzzle.get_questions() + "\n" + "回答格式（例）：\n海龟汤回答 1A2A"
@@ -67,7 +69,7 @@ def get(payload: str, message: TextMessage):
                 if PuzzleUnlock.check(openid, dependence_id) is True:
                     return "\n".join(Puzzle.get_keyquestions(payloads[0]))
             else:
-                return f"您的输入是「{payload}」，输入有误."
+                return f"您的输入是「{payload}」，输入有误"
 
         elif len(payloads) == 2:
             if Puzzle.get_locked(payloads[0]) is False:
