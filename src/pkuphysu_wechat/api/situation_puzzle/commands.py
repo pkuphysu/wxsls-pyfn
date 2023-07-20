@@ -6,9 +6,9 @@ from werobot.messages.messages import TextMessage
 from pkuphysu_wechat.wechat.core import wechat_mgr
 from pkuphysu_wechat.wechat.utils import master
 
-from .data import DEPENDENCE_DATA, PUZZLE_DATA, RULE
-from .data.database import Puzzle, PuzzleDependence
-from .models import PuzzleReview, PuzzleUnlock
+from .data import DEPENDENCE_DATA, PUZZLE_DATA
+from .data.database import RULE, Puzzle, PuzzleDependence
+from .models import PuzzleUnlock
 
 logger = getLogger(__name__)
 wechat_mgr.command_reg.mark_default_closed("situation_puzzle")
@@ -21,7 +21,8 @@ def alter_puzzle(payload: str, message: TextMessage):
     alterpuzzle | 更换谜题
     从本目录下的data/puzzle.json和data/dependence.json更换海龟汤内容 alterpuzzle [0-9]
     """
-    if not re.match(r"^\d$", payload):
+    #if not re.match(r"^\d$", payload):
+    if not 0<int(payload)<=17:
         return f"输入{payload}，格式错误，请认真阅读说明"
     try:
         puzzle = PUZZLE_DATA[payload]
@@ -49,10 +50,11 @@ def get(payload: str, message: TextMessage):
             if payloads[0] == "汤面":
                 cover = Puzzle.get_cover()
                 keyword = Puzzle.get_keyword()
+                keywords = keyword.copy()
                 for item in keyword:
                     if Puzzle.get_locked(item) is True:
-                        keyword.remove(item)
-                return cover + "\n" + "关键词：" + " ".join(keyword)
+                        keywords.remove(item)
+                return cover + "\n" + "关键词：" + " ".join(keywords)
 
             elif payloads[0] == "问题":
                 return Puzzle.get_questions() + "\n" + "回答格式（例）：\n海龟汤回答 1A2A"
@@ -109,19 +111,5 @@ def answer_puzzle(payload: str, message: TextMessage):
     if payload == answer:
         openid = message.source
         PuzzleUnlock.clear_personal_information(openid)
-        return explanation + "\n"
+        return explanation
     return "回答有误呀！请重新尝试~"
-
-
-@wechat_mgr.command(keywords=["reviewpuzzle", "海龟汤评论"], groups=["situation_puzzle"])
-def review_puzzle(payload: str, message: TextMessage):
-    """
-    reviewpuzzle<海龟汤评论>|请您对海龟汤的内容或者形式给出建议
-    例如：
-    海龟汤评论 这个海龟汤真下饭，就是题目多了点
-    """
-    if len(payload) > 100:
-        return "字数太多了[Respect]建议精简一些到100字以内哦"
-    open_id = message.source
-    PuzzleReview.add(open_id, payload)
-    return "已收到您的建议！感谢您的支持"
