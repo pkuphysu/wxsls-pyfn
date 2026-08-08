@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+if command -v poetry >/dev/null 2>&1; then
+    exec poetry run "$@"
+fi
+
+if [ -x .poetry/bin/poetry ]; then
+    exec .poetry/bin/poetry run "$@"
+fi
+
+echo "Poetry is not available in PATH or .poetry/bin/poetry" >&2
+exit 127

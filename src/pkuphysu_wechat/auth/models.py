@@ -2,7 +2,6 @@ import datetime
 import os
 from base64 import urlsafe_b64encode
 
-from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.sql import func
 
 from pkuphysu_wechat import db
@@ -31,7 +30,7 @@ class User(db.Model):
     __tablename__ = "user"
     openid = db.Column(db.String(32), primary_key=True)
     nickname = db.Column(db.String(32))
-    avatar = db.Column(BYTEA())
+    avatar = db.Column(db.LargeBinary())
 
     def update(self):
         db.session.merge(self)

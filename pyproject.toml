@@ -6,7 +6,7 @@ authors = ["Allan Chain "]
 
 [[tool.poetry.source]]
 name = 'default'
-url = 'https://pypi.tuna.tsinghua.edu.cn/simple'
+url = 'https://pypi.org/simple'
 default = true
 
 [tool.poetry.dependencies]
@@ -16,7 +16,8 @@ Flask = "^2.0.0"
 command4bot = "^0.4.1"
 dynaconf = "^3.1.4"
 sqlalchemy = "^1.4.6"
-psycopg2_binary = "^2.8.6"
+PyMySQL = { version = "^1.0.2", extras = ["rsa"] }
+cryptography = "^3.4.8"
 flask-sqlalchemy = "^2.5.1"
 isort = { version = "^5.8.0", extras = ["toml"] }
 flask-cors = "^3.0.10"

@@ -27,7 +27,7 @@ inputs:
     subnetId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.subnetId}
   environment:
     variables:
-      DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://${output:${stage}:${app}:pkuphysu-wechat-db.private.user}:${output:${stage}:${app}:pkuphysu-wechat-db.private.password}@${output:${stage}:${app}:pkuphysu-wechat-db.private.host}/${output:${stage}:${app}:pkuphysu-wechat-db.private.dbname}
+      DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: mysql+pymysql://${output:${stage}:${app}:pkuphysu-wechat-db.private.user}:${output:${stage}:${app}:pkuphysu-wechat-db.private.password}@${output:${stage}:${app}:pkuphysu-wechat-db.private.host}/${output:${stage}:${app}:pkuphysu-wechat-db.private.dbname}?charset=utf8mb4
       ENV_FOR_DYNACONF: ${env:DYNACONF_ENV}
   events:
     - apigw:
