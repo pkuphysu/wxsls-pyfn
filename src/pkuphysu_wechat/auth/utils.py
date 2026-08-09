@@ -2,6 +2,7 @@ from logging import getLogger
 
 from flask import abort, request
 
+from pkuphysu_wechat import db
 from pkuphysu_wechat.config import settings
 from pkuphysu_wechat.utils import respond_error
 
@@ -23,7 +24,7 @@ def token_required() -> str:
     token = auth_header.replace("Basic ", "", 1)
     if not settings.PRODUCTION and token == "developmentoken":
         return "developmentopenid"
-    token_record = UserToken.query.get(token)
+    token_record = db.session.get(UserToken, token)
     if not token_record or token_record.expired(settings.TOKEN_EXPIRY):
         abort(respond_error(401, "BadToken"))
     return token_record.openid

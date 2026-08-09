@@ -35,7 +35,9 @@ def alter_puzzle(payload: str, message: TextMessage):
     return "更改成功"
 
 
-@wechat_mgr.command(keywords=["海龟汤", "situation_puzzle"], groups=["situation_puzzle"])
+@wechat_mgr.command(
+    keywords=["海龟汤", "situation_puzzle"], groups=["situation_puzzle"]
+)
 def get(payload: str, message: TextMessage):
     """
     situation_puzzle <问题> | 与 AI 汤主进行海龟汤对话
@@ -55,7 +57,9 @@ def get(payload: str, message: TextMessage):
     return chat(openid, payload)
 
 
-@wechat_mgr.command(keywords=["answerpuzzle", "海龟汤回答"], groups=["situation_puzzle"])
+@wechat_mgr.command(
+    keywords=["answerpuzzle", "海龟汤回答"], groups=["situation_puzzle"]
+)
 def answer_puzzle(payload: str, message: TextMessage):
     """
     answerpuzzle <完整推理> | 将完整推理交给 AI 汤主判断

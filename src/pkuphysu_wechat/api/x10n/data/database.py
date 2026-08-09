@@ -24,7 +24,7 @@ class Datax10nProbs(db.Model):
             and isinstance(prob["answer"], str)
         ), "题目前三项应为字符串"
         assert isinstance(prob["choices"], list), "题目选项应为列表"
-        problem = cls.query.get(prob["probid"])
+        problem = db.session.get(cls, prob["probid"])
         if problem:
             print(f"覆盖第{prob['probid']}题")
             problem.text = prob["text"]
@@ -45,7 +45,7 @@ class Datax10nProbs(db.Model):
     @classmethod
     def get_prob(cls, probid: str) -> dict:
         assert isinstance(probid, str), "不合法的id输入"
-        prob = cls.query.get(probid)
+        prob = db.session.get(cls, probid)
         problem = {
             "text": prob.text,
             "img": prob.img,
@@ -64,12 +64,12 @@ class Datax10nProbs(db.Model):
     @classmethod
     def get_ans(cls, probid: str) -> list:
         assert isinstance(probid, str), "不合法的id输入"
-        prob = cls.query.get(probid)
+        prob = db.session.get(cls, probid)
         return prob.answer
 
     @classmethod
     def del_prob(cls, probid: str) -> None:
         assert isinstance(probid, str), "不合法的id输入"
-        prob = cls.query.get(probid)
+        prob = db.session.get(cls, probid)
         db.session.delete(prob)
         db.session.commit()

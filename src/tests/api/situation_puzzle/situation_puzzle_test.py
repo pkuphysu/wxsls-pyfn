@@ -170,7 +170,7 @@ def test_turn_order_and_reset_are_safe_while_requests_are_in_flight(monkeypatch)
 
     SituationPuzzleConversation.reset("parallel-user", "1")
     assert SituationPuzzleTurn.complete(pending.id, "旧回复") is False
-    assert SituationPuzzleTurn.query.get(pending.id).status == "stale"
+    assert db.session.get(SituationPuzzleTurn, pending.id).status == "stale"
     new_generation = SituationPuzzleTurn.begin("parallel-user", "1", "新一局")
     assert SituationPuzzleTurn.messages_for(new_generation, 10) == [
         {"role": "user", "content": "新一局"}

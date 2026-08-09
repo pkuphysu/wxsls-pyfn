@@ -10,6 +10,8 @@ jobs:
   test-and-lint:
     name: test and lint
     runs-on: ubuntu-latest
+    env:
+      TZ: UTC
     services:
       mysql:
         image: mysql:8.4
@@ -27,16 +29,21 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        id: python
         with:
-          python-version: 3.6
-      - uses: Gr1N/setup-poetry@v4
+          python-version: "3.11"
+      - uses: Gr1N/setup-poetry@v9
         with:
-          poetry-version: 1.1.6
-      - uses: allanchain/poetry-cache-action@release
+          poetry-version: 2.1.4
+      - uses: actions/cache@v5
         with:
-          replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
+          path: ~/.cache/pypoetry
+          key: poetry-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python.outputs.python-version }}-poetry-2.1.4-${{ hashFiles('poetry.lock') }}
+          restore-keys: poetry-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python.outputs.python-version }}-poetry-2.1.4-
+      - name: Install dependencies
+        run: poetry install --no-interaction
       - name: Run test
         run: poetry run python scripts/auto_coverage.py
       - name: Upload coverage

@@ -113,7 +113,7 @@ def decode_name(name: str) -> int:
     del name_parts[2]  # NOTE: hard coded 2!
     index = 0
     weight = 1
-    for (part_index, part) in enumerate(PARTS):
+    for part_index, part in enumerate(PARTS):
         index += weight * part.index(name_parts[part_index])
         weight *= len(part)
     number = index
@@ -127,7 +127,7 @@ def is_valid_name(name: str) -> bool:
     del name_parts[2]  # NOTE: hard coded 2!
     if len(name_parts) != len(PARTS):
         return False
-    for (part_index, part) in enumerate(PARTS):
+    for part_index, part in enumerate(PARTS):
         if name_parts[part_index] not in part:
             return False
     return True

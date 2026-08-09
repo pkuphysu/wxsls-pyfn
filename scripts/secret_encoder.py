@@ -11,6 +11,7 @@ python scripts/secret_encoder.py
 
 Then update GitHub actions' secret with printed base64 string.
 """
+
 from base64 import b64encode
 from pathlib import Path
 

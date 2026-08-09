@@ -9,17 +9,16 @@ Author: Logan Raarup <logan@logan.dk>
 
 Modified by Tencent team to fit Tencent cloud.
 
-Modified by Allan Chain to fit Werkzeug 2.x
+Modified by Allan Chain to fit modern Werkzeug releases
 """
 import base64
 import os
 import sys
+from http import HTTPStatus
 from io import BytesIO
+from urllib.parse import unquote, urlencode
 
-from werkzeug._internal import _to_bytes, _wsgi_encoding_dance
-from werkzeug.datastructures import Headers, MultiDict
-from werkzeug.http import HTTP_STATUS_CODES
-from werkzeug.urls import url_encode, url_unquote
+from werkzeug.datastructures import Headers
 from werkzeug.wrappers import Response
 
 # List of MIME types that should not be base64 encoded. MIME types within `text/*`
@@ -31,6 +30,11 @@ TEXT_MIME_TYPES = [
     "application/vnd.api+json",
     "image/svg+xml",
 ]
+
+
+def encode_wsgi_value(value):
+    """Encode a Unicode value as the Latin-1 string required by PEP 3333."""
+    return value.encode("utf-8").decode("latin-1")
 
 
 def all_casings(input_string):
@@ -86,9 +90,8 @@ def group_headers(headers):
 def encode_query_string(event):
     multi = event.get("multiValueQueryStringParameters")
     if multi:
-        return url_encode(MultiDict((i, j) for i in multi for j in multi[i]))
-    else:
-        return url_encode(event.get("queryString") or {})
+        return urlencode(multi, doseq=True)
+    return urlencode(event.get("queryString") or {})
 
 
 def handle_request(app, event, context=None):
@@ -136,12 +139,12 @@ def handle_request(app, event, context=None):
     if event.get("isBase64Encoded", False):
         body = base64.b64decode(body)
     if isinstance(body, str):
-        body = _to_bytes(body, charset="utf-8")
+        body = body.encode("utf-8")
 
     environ = {
         "CONTENT_LENGTH": str(len(body)),
         "CONTENT_TYPE": headers.get("Content-Type", ""),
-        "PATH_INFO": url_unquote(path_info),
+        "PATH_INFO": unquote(path_info),
         "QUERY_STRING": encode_query_string(event),
         "REMOTE_ADDR": event["requestContext"].get("identity", {}).get("sourceIp", ""),
         "REMOTE_USER": event["requestContext"]
@@ -176,7 +179,7 @@ def handle_request(app, event, context=None):
 
     for key, value in environ.items():
         if isinstance(value, str):
-            environ[key] = _wsgi_encoding_dance(value)
+            environ[key] = encode_wsgi_value(value)
 
     for key, value in headers.items():
         key = "HTTP_" + key.upper().replace("-", "_")
@@ -196,7 +199,7 @@ def handle_request(app, event, context=None):
         # If the request comes from ALB we need to add a status description
         returndict["statusDescription"] = "%d %s" % (
             response.status_code,
-            HTTP_STATUS_CODES[response.status_code],
+            HTTPStatus(response.status_code).phrase,
         )
 
     if response.data:

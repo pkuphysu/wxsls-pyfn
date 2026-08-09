@@ -14,7 +14,7 @@ class Datax10n(db.Model):
 
     @classmethod
     def get_info(cls, openid: str) -> dict:
-        student = cls.query.get(openid)
+        student = db.session.get(cls, openid)
         if student is None:
             student = cls(openid=openid)
             db.session.add(student)
@@ -27,7 +27,7 @@ class Datax10n(db.Model):
 
     @classmethod
     def startgame(cls, openid: str, starttime: str, prob_ids: list) -> bool:
-        student = cls.query.get(openid)
+        student = db.session.get(cls, openid)
         if student is None:
             return False
         else:
@@ -39,21 +39,21 @@ class Datax10n(db.Model):
 
     @classmethod
     def get_probs(cls, openid: str) -> list:
-        student = cls.query.get(openid)
+        student = db.session.get(cls, openid)
         assert student is not None, "用户不存在"
         prob_ids = json.loads(student.prob_ids)
         return prob_ids
 
     @classmethod
     def get_starttime(cls, openid: str) -> float:
-        student = cls.query.get(openid)
+        student = db.session.get(cls, openid)
         assert student is not None, "用户不存在"
         start_time = float(student.starttime)
         return start_time
 
     @classmethod
     def put_name(cls, openid: str, name: str, stu_id: str) -> bool:
-        student = cls.query.get(openid)
+        student = db.session.get(cls, openid)
         assert student is not None, "用户不存在"
         student.name = name
         student.stu_id = stu_id
@@ -63,7 +63,7 @@ class Datax10n(db.Model):
 
     @classmethod
     def put_info(cls, openid: str, result: dict) -> bool:
-        student = cls.query.get(openid)
+        student = db.session.get(cls, openid)
         if student is None or student.result:
             return False
         student.result = json.dumps(result)
@@ -74,6 +74,6 @@ class Datax10n(db.Model):
     @classmethod
     def del_info(cls, openid: str) -> bool:
         "For debug only"
-        student = cls.query.get(openid)
+        student = db.session.get(cls, openid)
         db.session.delete(student)
         db.session.commit()

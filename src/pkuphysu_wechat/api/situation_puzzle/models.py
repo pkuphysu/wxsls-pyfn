@@ -17,7 +17,7 @@ class PuzzleUnlock(db.Model):
     def clear(cls):  # 清空
         all_cols = cls.query.all()
         for col in all_cols:
-            db.session.delete(cls.query.get(col.id))
+            db.session.delete(db.session.get(cls, col.id))
         db.session.commit()
 
     @classmethod  # 一个一个加入
@@ -39,7 +39,7 @@ class PuzzleUnlock(db.Model):
     def clear_personal_information(cls, openid: str):
         lst = cls.query.filter_by(open_id=openid).all()
         for record in lst:
-            db.session.delete(cls.query.get(record.id))
+            db.session.delete(db.session.get(cls, record.id))
         db.session.commit()
 
 
@@ -53,7 +53,7 @@ class SituationPuzzleState(db.Model):
 
     @classmethod
     def get_active_puzzle_id(cls):
-        state = cls.query.get(1)
+        state = db.session.get(cls, 1)
         if state is None:
             state = cls(id=1, active_puzzle_id="1")
             db.session.add(state)
@@ -61,12 +61,12 @@ class SituationPuzzleState(db.Model):
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
-                state = cls.query.get(1)
+                state = db.session.get(cls, 1)
         return state.active_puzzle_id
 
     @classmethod
     def set_active_puzzle_id(cls, puzzle_id):
-        state = cls.query.get(1)
+        state = db.session.get(cls, 1)
         if state is None:
             state = cls(id=1, active_puzzle_id=puzzle_id)
         else:
@@ -76,7 +76,7 @@ class SituationPuzzleState(db.Model):
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-            state = cls.query.get(1)
+            state = db.session.get(cls, 1)
             state.active_puzzle_id = puzzle_id
             db.session.commit()
 

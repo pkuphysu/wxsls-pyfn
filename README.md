@@ -23,22 +23,21 @@
 
 ### Python 和 Poetry 环境
 
-项目要求 Python `^3.6.1`，CI 使用 Python 3.6 和 Poetry 1.1.6。Python 3.6
-已经停止维护，不建议安装到系统环境中；应使用项目内的 Conda/virtualenv 前缀或
-容器隔离。
+项目支持 Python `>=3.9,<3.12`，CI 使用 Python 3.11，当前本地开发和部署环境使用
+Python 3.9。Poetry 统一使用 2.1.4。
 
 当前开发环境采用以下项目内布局，两个目录均已加入 `.gitignore`：
 
-- `.venv/`：Python 3.6 和项目依赖；
-- `.poetry/`：由系统 Python 3.9 驱动的 Poetry 1.1.6，避免 Poetry 自身依赖污染
+- `.venv/`：Python 3.9 和项目依赖；
+- `.poetry/`：独立安装的 Poetry 2.1.4，避免 Poetry 自身依赖污染
   项目环境。
 
 环境创建完成后，安装依赖并配置提交检查：
 
 ```sh
 source .venv/bin/activate
-python --version       # Python 3.6.x
-poetry --version       # Poetry 1.1.6
+python --version       # Python 3.9.x
+poetry --version       # Poetry 2.1.4
 poetry install
 poetry run pre-commit install
 ```
