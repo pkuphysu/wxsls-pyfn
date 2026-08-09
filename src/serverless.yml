@@ -15,7 +15,7 @@ inputs:
   zone: ap-shanghai-2
   runtime: CustomRuntime
   initTimeout: 10
-  timeout: 10
+  timeout: 30
   layers:
     - name: ${output:${stage}:${app}:pkuphysu-wechat-layer.name}
       version: ${output:${stage}:${app}:pkuphysu-wechat-layer.version}

@@ -24,6 +24,15 @@ PRIZE_COUNT = 3
 PRIZE_NAMES = ["一等奖", "二等奖", "三等奖"]
 EVENT = "eveparty"
 
+[default.situation_puzzle_ai]
+API_URL = "https://api.openai.com/v1/chat/completions"
+API_KEY = ""
+MODEL = "gpt-4o-mini"
+TIMEOUT = 20
+TEMPERATURE = 0.2
+MAX_TOKENS = 300
+MAX_HISTORY_TURNS = 10
+
 [default.logging]
 version = 1
 
