@@ -60,20 +60,17 @@ jobs:
         env:
           SECRETS: ${{ secrets.SECRET_SETTING }}
       - name: Install serverless
-        run: curl -o- -L https://slss.io/install | bash
-        env:
-          VERSION: 2.41.2
+        run: npm install -g serverless-cloud-framework
       - name: Deploy serverless
         shell: bash --noprofile --norc -eo pipefail {0}
         run: |
           # Force deploy to fix permission loss problem
-          $HOME/.serverless/bin/sls deploy --force ${{ steps.opt.outputs.deploy_option }} \
+          scf deploy --force ${{ steps.opt.outputs.deploy_option }} \
             | grep -v -e '中 ' -e '化 ' -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           LAYER_SRC: ${{ steps.lib-path.outputs.parent }}
           DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env }}
           SERVERLESS_PLATFORM_VENDOR: tencent
-          SLS_GEO_LOCATION: cn
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
           TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
