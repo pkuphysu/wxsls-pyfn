@@ -10,6 +10,8 @@ jobs:
   deploy:
     name: deploy to serverless
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/master' && 'prod' || 'dev' }}
     if: ${{ ! contains(github.event.head_commit.message, '[skip-deploy]') }}
     steps:
       - name: Determine env
@@ -70,6 +72,13 @@ jobs:
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           LAYER_SRC: ${{ steps.lib-path.outputs.parent }}
+          SCF_LAYER_RUNTIME_NAME: ${{ vars.SCF_LAYER_RUNTIME_NAME }}
+          SCF_LAYER_RUNTIME_VERSION: ${{ vars.SCF_LAYER_RUNTIME_VERSION }}
+          SCF_LAYER_PYTHON_NAME: ${{ vars.SCF_LAYER_PYTHON_NAME }}
+          SCF_LAYER_PYTHON_VERSION: ${{ vars.SCF_LAYER_PYTHON_VERSION }}
+          SCF_VPC_ID: ${{ vars.SCF_VPC_ID }}
+          SCF_SUBNET_ID: ${{ vars.SCF_SUBNET_ID }}
+          DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: ${{ secrets.DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI }}
           DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env }}
           SERVERLESS_PLATFORM_VENDOR: tencent
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
