@@ -9,7 +9,7 @@ class RandomDraw(db.Model):
 
     @classmethod
     def add_participant(cls, openid: str, name: str) -> bool:
-        if cls.query.get(openid):
+        if db.session.get(cls, openid):
             return False
         db.session.add(cls(openid=openid, name=name))
         db.session.commit()

@@ -10,32 +10,40 @@ jobs:
   test-and-lint:
     name: test and lint
     runs-on: ubuntu-latest
+    env:
+      TZ: UTC
     services:
-      postgres:
-        image: postgres:10
+      mysql:
+        image: mysql:8.4
         env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: wechat
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+          MYSQL_DATABASE: wechat
         ports:
-          - 5432:5432
-        # Set health checks to wait until postgres has started
+          - 3306:3306
+        # Wait until MySQL accepts authenticated connections.
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -prootpassword"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        id: python
         with:
-          python-version: 3.6
-      - uses: Gr1N/setup-poetry@v4
+          python-version: "3.11"
+      - uses: Gr1N/setup-poetry@v9
         with:
-          poetry-version: 1.1.6
-      - uses: allanchain/poetry-cache-action@release
+          poetry-version: 2.1.4
+      - uses: actions/cache@v5
         with:
-          replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
+          path: ~/.cache/pypoetry
+          key: poetry-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python.outputs.python-version }}-poetry-2.1.4-${{ hashFiles('poetry.lock') }}
+          restore-keys: poetry-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python.outputs.python-version }}-poetry-2.1.4-
+      - name: Install dependencies
+        run: poetry install --no-interaction
       - name: Run test
         run: poetry run python scripts/auto_coverage.py
       - name: Upload coverage

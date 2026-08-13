@@ -33,13 +33,15 @@ class SFBlessing(db.Model):
         return cls.query.filter(func.date(cls.create_time) == date).all()
 
     @classmethod
-    def remove_bless(cls, person=None, blessing_id=None):  # 删除某一个id或某一个人的祝福
+    def remove_bless(
+        cls, person=None, blessing_id=None
+    ):  # 删除某一个id或某一个人的祝福
         if blessing_id is not None:
-            db.session.delete(cls.query.get(blessing_id))
+            db.session.delete(db.session.get(cls, blessing_id))
         if person is not None:
             ban_lst = cls.query.filter_by(create_by=person).all()
             for ban_record in ban_lst:
-                db.session.delete(cls.query.get(ban_record.blessing_id))
+                db.session.delete(db.session.get(cls, ban_record.blessing_id))
         db.session.commit()
 
     @classmethod
@@ -65,7 +67,7 @@ class SFBlessing(db.Model):
 
     @classmethod
     def get_creator(cls, blessing_id: int) -> Optional[str]:
-        record = cls.query.get(blessing_id)
+        record = db.session.get(cls, blessing_id)
         if record is None:
             return None
         return record.create_by
@@ -98,11 +100,11 @@ class SFBackBlessing(db.Model):  # 和上面基本一致，多了一个send_to�
     @classmethod
     def remove_backbless(cls, person=None, backblessing_id=None):
         if backblessing_id is not None:
-            db.session.delete(cls.query.get(backblessing_id))
+            db.session.delete(db.session.get(cls, backblessing_id))
         if person is not None:
             ban_lst = cls.query.filter_by(create_by=person).all()
             for ban_record in ban_lst:
-                db.session.delete(cls.query.get(ban_record.backblessing_id))
+                db.session.delete(db.session.get(cls, ban_record.backblessing_id))
         db.session.commit()
 
 
@@ -119,7 +121,7 @@ class BlessBan(db.Model):  # 存储禁掉的人的数据
     @classmethod
     def remove_name(cls, bless_id):  # 移除
         if cls.is_name_baned(bless_id):
-            db.session.delete(cls.query.get(bless_id))
+            db.session.delete(db.session.get(cls, bless_id))
             db.session.commit()
 
     @classmethod

@@ -22,13 +22,22 @@ jobs:
             echo '::set-output name=stage::dev'
             echo '::set-output name=dynaconf_env::development'
           fi
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        id: python
         with:
-          python-version: 3.9
-      - uses: Gr1N/setup-poetry@v4
+          python-version: "3.9"
+      - uses: Gr1N/setup-poetry@v9
         with:
-          poetry-version: 1.1.6
+          poetry-version: 2.1.4
+      - uses: actions/cache@v5
+        id: cache
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ steps.env.outputs.stage }}-poetry-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python.outputs.python-version }}-poetry-2.1.4-${{ hashFiles('poetry.lock') }}
+          restore-keys: ${{ steps.env.outputs.stage }}-poetry-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python.outputs.python-version }}-poetry-2.1.4-
+      - name: Install dependencies
+        run: poetry install --only main --no-root --no-interaction
       - name: Get site-packages path
         id: lib-path
         shell: poetry run python {0}
@@ -38,14 +47,6 @@ jobs:
 
           lib_parent = Path(get_python_lib()).parent
           print('::set-output name=parent::' + str(lib_parent))
-      - uses: allanchain/poetry-cache-action@release
-        id: cache
-        with:
-          replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
-          cache-key-prefix: ${{ steps.env.outputs.stage }}
-          install-args: --no-dev --no-root
-          ensure-module: flask
-          upload-strategy: on-success
       - name: Determine options
         id: opt
         run: |
