@@ -46,10 +46,9 @@ def pytest_runtest_setup(item):
         pytest.xfail("prevfail [%s]" % previousfailed.name)
 
 
-def pytest_ignore_collect(path):
+def pytest_ignore_collect(collection_path):
     from pkuphysu_wechat.api import modules
 
-    if path.isdir():
-        parent_path = path.parts()[-2]
-        if parent_path.purebasename == "api" and path.purebasename not in modules:
+    if collection_path.is_dir():
+        if collection_path.parent.name == "api" and collection_path.name not in modules:
             return True

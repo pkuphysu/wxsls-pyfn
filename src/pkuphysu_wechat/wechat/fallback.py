@@ -3,6 +3,8 @@ import json
 from command4bot.manager import split_keyword
 from werobot.replies import TransferCustomerServiceReply
 
+from pkuphysu_wechat import db
+
 from .core import wechat_command_reg, wechat_mgr
 from .models import AutoReply
 from .utils import get_similar_help_for_user
@@ -10,7 +12,7 @@ from .utils import get_similar_help_for_user
 
 @wechat_mgr.fallback
 def help_with_similar(content: str, message) -> str:
-    reply_record = AutoReply.query.get(content)
+    reply_record = db.session.get(AutoReply, content)
     if reply_record is not None:
         return json.loads(reply_record.response)
     keyword, _ = split_keyword(content)

@@ -1,7 +1,7 @@
 from logging import getLogger
 
 from flask import Response, abort, jsonify
-from flask_sqlalchemy import BaseQuery
+from flask_sqlalchemy.query import Query
 
 logger = getLogger()
 
@@ -40,11 +40,12 @@ def respond_success(**kwargs) -> Response:
     return jsonify(status=200, **kwargs)
 
 
-class CustomBaseQuery(BaseQuery):
+class CustomBaseQuery(Query):
     def get_or_abort(self, ident, code: int, errid_empty: str, errid_notexist: str):
         if not ident:
             abort(respond_error(code, errid_empty))
-        rv = self.get(ident)
+        model = self.column_descriptions[0]["entity"]
+        rv = self.session.get(model, ident)
         if not rv:
             abort(respond_error(code, errid_notexist))
         return rv

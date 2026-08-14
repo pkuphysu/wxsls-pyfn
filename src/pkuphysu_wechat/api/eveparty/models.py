@@ -6,7 +6,9 @@ from pkuphysu_wechat.config import settings
 
 def get_user(f):
     def func(cls, open_id, *args, **kargs):
-        user = cls.query.get({"event": settings.eveparty.EVENT, "open_id": open_id})
+        user = db.session.get(
+            cls, {"event": settings.eveparty.EVENT, "open_id": open_id}
+        )
         if user is None:
             return False
         resp = f(cls, user, *args, **kargs)

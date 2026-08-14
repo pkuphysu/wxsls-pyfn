@@ -10,6 +10,8 @@ jobs:
   deploy:
     name: deploy to serverless
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/master' && 'prod' || 'dev' }}
     if: ${{ ! contains(github.event.head_commit.message, '[skip-deploy]') }}
     steps:
       - name: Determine env
@@ -22,13 +24,22 @@ jobs:
             echo '::set-output name=stage::dev'
             echo '::set-output name=dynaconf_env::development'
           fi
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        id: python
         with:
-          python-version: 3.9
-      - uses: Gr1N/setup-poetry@v4
+          python-version: "3.9"
+      - uses: Gr1N/setup-poetry@v9
         with:
-          poetry-version: 1.1.6
+          poetry-version: 2.1.4
+      - uses: actions/cache@v5
+        id: cache
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ steps.env.outputs.stage }}-poetry-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python.outputs.python-version }}-poetry-2.1.4-${{ hashFiles('poetry.lock') }}
+          restore-keys: ${{ steps.env.outputs.stage }}-poetry-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python.outputs.python-version }}-poetry-2.1.4-
+      - name: Install dependencies
+        run: poetry install --only main --no-root --no-interaction
       - name: Get site-packages path
         id: lib-path
         shell: poetry run python {0}
@@ -38,14 +49,6 @@ jobs:
 
           lib_parent = Path(get_python_lib()).parent
           print('::set-output name=parent::' + str(lib_parent))
-      - uses: allanchain/poetry-cache-action@release
-        id: cache
-        with:
-          replace-mirror: pypi.tuna.tsinghua.edu.cn/pypi.org
-          cache-key-prefix: ${{ steps.env.outputs.stage }}
-          install-args: --no-dev --no-root
-          ensure-module: flask
-          upload-strategy: on-success
       - name: Determine options
         id: opt
         run: |
@@ -59,20 +62,24 @@ jobs:
         env:
           SECRETS: ${{ secrets.SECRET_SETTING }}
       - name: Install serverless
-        run: curl -o- -L https://slss.io/install | bash
-        env:
-          VERSION: 2.41.2
+        run: npm install -g serverless-cloud-framework
       - name: Deploy serverless
         shell: bash --noprofile --norc -eo pipefail {0}
         run: |
           # Force deploy to fix permission loss problem
-          $HOME/.serverless/bin/sls deploy --force ${{ steps.opt.outputs.deploy_option }} \
+          scf deploy --force ${{ steps.opt.outputs.deploy_option }} \
             | grep -v -e '中 ' -e '化 ' -e NA
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           LAYER_SRC: ${{ steps.lib-path.outputs.parent }}
+          SCF_LAYER_RUNTIME_NAME: ${{ vars.SCF_LAYER_RUNTIME_NAME }}
+          SCF_LAYER_RUNTIME_VERSION: ${{ vars.SCF_LAYER_RUNTIME_VERSION }}
+          SCF_LAYER_PYTHON_NAME: ${{ vars.SCF_LAYER_PYTHON_NAME }}
+          SCF_LAYER_PYTHON_VERSION: ${{ vars.SCF_LAYER_PYTHON_VERSION }}
+          SCF_VPC_ID: ${{ vars.SCF_VPC_ID }}
+          SCF_SUBNET_ID: ${{ vars.SCF_SUBNET_ID }}
+          DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: ${{ secrets.DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI }}
           DYNACONF_ENV: ${{ steps.env.outputs.dynaconf_env }}
           SERVERLESS_PLATFORM_VENDOR: tencent
-          SLS_GEO_LOCATION: cn
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
           TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}

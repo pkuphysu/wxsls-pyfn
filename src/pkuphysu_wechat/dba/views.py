@@ -17,7 +17,10 @@ logger = getLogger(__name__)
 
 @bp.route("/db-tables/create-all", methods=["POST"])
 def create_all():
+    # Release any read transaction before DDL changes table definitions.
+    db.session.remove()
     db.create_all()
+    db.session.remove()
     logger.info("Tables created")
     return respond_success()
 

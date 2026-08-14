@@ -15,19 +15,19 @@ inputs:
   zone: ap-shanghai-2
   runtime: CustomRuntime
   initTimeout: 10
-  timeout: 10
+  timeout: 30
   layers:
-    - name: ${output:${stage}:${app}:pkuphysu-wechat-layer.name}
-      version: ${output:${stage}:${app}:pkuphysu-wechat-layer.version}
-    - name: ${output:${stage}:${app}:pkuphysu-wechat-python.name}
-      version: ${output:${stage}:${app}:pkuphysu-wechat-python.version}
+    - name: ${env:SCF_LAYER_RUNTIME_NAME}
+      version: ${env:SCF_LAYER_RUNTIME_VERSION}
+    - name: ${env:SCF_LAYER_PYTHON_NAME}
+      version: ${env:SCF_LAYER_PYTHON_VERSION}
   eip: true
   vpcConfig:
-    vpcId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.vpcId}
-    subnetId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.subnetId}
+    vpcId: ${env:SCF_VPC_ID}
+    subnetId: ${env:SCF_SUBNET_ID}
   environment:
     variables:
-      DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://${output:${stage}:${app}:pkuphysu-wechat-db.private.user}:${output:${stage}:${app}:pkuphysu-wechat-db.private.password}@${output:${stage}:${app}:pkuphysu-wechat-db.private.host}/${output:${stage}:${app}:pkuphysu-wechat-db.private.dbname}
+      DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: ${env:DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI}
       ENV_FOR_DYNACONF: ${env:DYNACONF_ENV}
   events:
     - apigw:
@@ -45,5 +45,5 @@ inputs:
     - timer:
         parameters:
           name: health-check
-          cronExpression: "0 */10 * * * * *" # trigger every 10 min
+          cronExpression: "0 */10 * * * * *"
           enable: true

@@ -4,6 +4,10 @@ __pycache__/
 
 .vscode/
 
+# project-local Python and Poetry environments
+.venv/
+.poetry/
+
 # serverless framework credential file
 .env
 
@@ -13,3 +17,4 @@ __pycache__/
 # coverage data file
 .coverage
 coverage.xml
+.omx/
