@@ -17,17 +17,17 @@ inputs:
   initTimeout: 10
   timeout: 30
   layers:
-    - name: ${env:SCF_LAYER_RUNTIME_NAME}
-      version: ${env:SCF_LAYER_RUNTIME_VERSION}
-    - name: ${env:SCF_LAYER_PYTHON_NAME}
-      version: ${env:SCF_LAYER_PYTHON_VERSION}
+    - name: ${output:${stage}:${app}:pkuphysu-wechat-layer.name}
+      version: ${output:${stage}:${app}:pkuphysu-wechat-layer.version}
+    - name: ${output:${stage}:${app}:pkuphysu-wechat-python.name}
+      version: ${output:${stage}:${app}:pkuphysu-wechat-python.version}
   eip: true
   vpcConfig:
-    vpcId: ${env:SCF_VPC_ID}
-    subnetId: ${env:SCF_SUBNET_ID}
+    vpcId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.vpcId}
+    subnetId: ${output:${stage}:${app}:pkuphysu-wechat-vpc.subnetId}
   environment:
     variables:
-      DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: ${env:DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI}
+      DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: mysql+pymysql://root:${output:${stage}:${app}:pkuphysu-wechat-db.adminPassword}@${output:${stage}:${app}:pkuphysu-wechat-db.connection.ip}:${output:${stage}:${app}:pkuphysu-wechat-db.connection.port}/pkuphysu?charset=utf8mb4
       ENV_FOR_DYNACONF: ${env:DYNACONF_ENV}
   events:
     - apigw:

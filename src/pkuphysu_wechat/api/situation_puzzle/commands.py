@@ -6,7 +6,7 @@ from pkuphysu_wechat.wechat.core import wechat_mgr
 from pkuphysu_wechat.wechat.utils import master
 
 from .data import PUZZLE_DATA
-from .models import SituationPuzzleConversation, SituationPuzzleState
+from .models import PuzzleReview, SituationPuzzleConversation, SituationPuzzleState
 from .service import chat, get_active_puzzle
 
 logger = getLogger(__name__)
@@ -18,6 +18,7 @@ RULE = """海龟汤已经由 AI 汤主主持：
 3. 猜到完整真相后，直接把推理作为问题发送；AI 汤主会判断是否通关。
 4. 输入“海龟汤 重置”开启新一局，旧记录仍保存在数据库中。
 5. 输入“海龟汤 规则”再次查看本说明。
+6. 输入“海龟汤评论 内容”为海龟汤提供点评。
 """
 
 
@@ -68,3 +69,18 @@ def answer_puzzle(payload: str, message: TextMessage):
     if not payload:
         return "请在命令后写出您的完整推理。"
     return chat(message.source, payload)
+
+
+@wechat_mgr.command(
+    keywords=["reviewpuzzle", "海龟汤评论"], groups=["situation_puzzle"]
+)
+def review_puzzle(payload: str, message: TextMessage):
+    """
+    reviewpuzzle <海龟汤评论> | 请您对海龟汤的内容或者形式给出建议
+    例如：
+    海龟汤评论 这个海龟汤真下饭，就是题目多了点
+    """
+    if len(payload) > 100:
+        return "字数太多了[Respect]建议精简一些到100字以内哦"
+    PuzzleReview.add(message.source, payload)
+    return "已收到您的建议！感谢您的支持"
