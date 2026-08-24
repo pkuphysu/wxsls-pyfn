@@ -104,6 +104,8 @@ def handle_request(app, event, context=None):
     else:
         headers = Headers(event["headers"])
 
+    request_context = event.get("requestContext") or {}
+
     strip_stage_path = os.environ.get("STRIP_STAGE_PATH", "").lower().strip() in [
         "yes",
         "y",
@@ -146,13 +148,14 @@ def handle_request(app, event, context=None):
         "CONTENT_TYPE": headers.get("Content-Type", ""),
         "PATH_INFO": unquote(path_info),
         "QUERY_STRING": encode_query_string(event),
-        "REMOTE_ADDR": event["requestContext"].get("identity", {}).get("sourceIp", ""),
-        "REMOTE_USER": event["requestContext"]
-        .get("authorizer", {})
-        .get("principalId", ""),
+        "REMOTE_ADDR": headers.get("X-Scf-Remote-Addr")
+        or request_context.get("identity", {}).get("sourceIp", ""),
+        "REMOTE_USER": request_context.get("authorizer", {}).get("principalId", ""),
         "REQUEST_METHOD": event["httpMethod"],
         "SCRIPT_NAME": script_name,
-        "SERVER_NAME": headers.get("Host", "lambda"),
+        "SERVER_NAME": headers.get("Host")
+        or headers.get("X-Scf-Request-Domain")
+        or "lambda",
         "SERVER_PORT": headers.get("X-Forwarded-Port", "80"),
         "SERVER_PROTOCOL": "HTTP/1.1",
         "wsgi.errors": sys.stderr,
@@ -162,7 +165,7 @@ def handle_request(app, event, context=None):
         "wsgi.run_once": False,
         "wsgi.url_scheme": headers.get("X-Forwarded-Proto", "http"),
         "wsgi.version": (1, 0),
-        "serverless.authorizer": event["requestContext"].get("authorizer"),
+        "serverless.authorizer": request_context.get("authorizer"),
         "serverless.event": event,
         "serverless.context": context,
         # TODO: Deprecate the following entries, as they do not comply with the WSGI
@@ -172,7 +175,7 @@ def handle_request(app, event, context=None):
         #   These variables should be named using only lower-case letters, numbers,
         #   dots, and underscores, and should be prefixed with a name that is unique
         #   to the defining server or gateway.
-        "API_GATEWAY_AUTHORIZER": event["requestContext"].get("authorizer"),
+        "API_GATEWAY_AUTHORIZER": request_context.get("authorizer"),
         "event": event,
         "context": context,
     }
@@ -195,7 +198,7 @@ def handle_request(app, event, context=None):
     else:
         returndict["headers"] = split_headers(response.headers)
 
-    if event.get("requestContext").get("elb"):
+    if request_context.get("elb"):
         # If the request comes from ALB we need to add a status description
         returndict["statusDescription"] = "%d %s" % (
             response.status_code,

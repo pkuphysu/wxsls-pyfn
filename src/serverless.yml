@@ -30,18 +30,25 @@ inputs:
       DYNACONF_FLASK__SQLALCHEMY_DATABASE_URI: mysql+pymysql://root:${output:${stage}:${app}:pkuphysu-wechat-db.adminPassword}@${output:${stage}:${app}:pkuphysu-wechat-db.connection.ip}:${output:${stage}:${app}:pkuphysu-wechat-db.connection.port}/pkuphysu?charset=utf8mb4
       ENV_FOR_DYNACONF: ${env:DYNACONF_ENV}
   events:
-    - apigw:
+    - http:
         parameters:
-          serviceName: apigw_${stage}
-          protocols:
-            - https
-          environment: release
-          endpoints:
-            - path: /
-              method: ANY
-              enableCORS: true
-              function:
-                isIntegratedResponse: true
+          authType: NONE
+          qualifier: $DEFAULT
+          netConfig:
+            enableIntranet: false
+            enableExtranet: true
+          corsConfig:
+            enable: true
+            origins:
+              - "*"
+            methods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - HEAD
+              - OPTIONS
     - timer:
         parameters:
           name: health-check
