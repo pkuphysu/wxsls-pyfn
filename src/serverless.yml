@@ -1,4 +1,4 @@
-component: scf
+component: scf@0.9.19
 name: pkuphysu-wechat
 app: pkuphysu-wechat
 stage: ${env:STAGE}
