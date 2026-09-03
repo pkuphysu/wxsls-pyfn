@@ -82,6 +82,9 @@ class TokenCode(db.Model):
 
     def get_token(self):
         token = self.token
+        if not token:
+            return None
+
         db.session.delete(self)
         db.session.commit()
         return token

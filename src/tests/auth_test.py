@@ -46,6 +46,32 @@ def test_auth_exsisting_token(client):
     assert token
 
 
+def test_auth_exchange_keeps_pending_tcode(client):
+    rv = client.get("/auth/tcode/get")
+    tcode = rv.json.get("tcode")
+    assert rv.status_code == 200
+    assert tcode
+
+    for _ in range(2):
+        rv = client.get(f"/auth/tcode/exchange?tcode={tcode}")
+        assert rv.status_code == 404
+        assert rv.json.get("errid") == "ExchangeNoToken"
+
+    rv = client.get(
+        f"/auth/tcode/grant?tcode={tcode}",
+        headers=[("Authorization", "Basic developmentoken")],
+    )
+    assert rv.status_code == 200
+
+    rv = client.get(f"/auth/tcode/exchange?tcode={tcode}")
+    assert rv.status_code == 200
+    assert rv.json.get("token")
+
+    rv = client.get(f"/auth/tcode/exchange?tcode={tcode}")
+    assert rv.status_code == 400
+    assert rv.json.get("errid") == "ExchangeBadTCode"
+
+
 def test_dev_token(client):
     rv = client.get(
         "/auth/openid",
