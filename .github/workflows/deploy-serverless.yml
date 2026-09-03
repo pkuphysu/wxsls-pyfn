@@ -60,13 +60,20 @@ jobs:
         env:
           SECRETS: ${{ secrets.SECRET_SETTING }}
       - name: Install serverless
-        run: npm install -g serverless-cloud-framework
+        run: npm install -g serverless-cloud-framework@latest
+
+      - name: Debug SCF version
+        run: |
+          which scf || true
+          scf --version || true
+          node --version
+          npm list -g --depth=0 || true
+
       - name: Deploy serverless
         shell: bash --noprofile --norc -eo pipefail {0}
         run: |
           # Force deploy to fix permission loss problem
-          scf deploy --force ${{ steps.opt.outputs.deploy_option }} \
-            | grep -v -e '中 ' -e '化 ' -e NA
+          scf deploy --force ${{ steps.opt.outputs.deploy_option }} --debug
         env:
           STAGE: ${{ steps.env.outputs.stage }}
           LAYER_SRC: ${{ steps.lib-path.outputs.parent }}
