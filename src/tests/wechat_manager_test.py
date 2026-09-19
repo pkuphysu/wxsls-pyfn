@@ -6,7 +6,6 @@ from pkuphysu_wechat.wechat_manager import core, views
 from pkuphysu_wechat.wechat_manager.models import WechatLoginSession, WechatSession
 
 FINGERPRINT = "0123456789abcdef0123456789abcdef"
-IMAGE_BYTES = b"\xff\xd8fakejpeg"
 HEAD_IMG_URL = "https://wx.qlogo.cn/mmopen/abc/64"
 
 
@@ -26,20 +25,10 @@ def fake_mp(monkeypatch):
         },
         "check_home": True,
         "head_img_url": HEAD_IMG_URL,
-        "image_content_type": "image/jpeg",
     }
 
-    def fake_image_response():
-        resp = MagicMock()
-        resp.ok = True
-        resp.content = IMAGE_BYTES
-        resp.headers = {"Content-Type": state["image_content_type"]}
-        return resp
-
     def make_fake_session():
-        session = MagicMock()
-        session.get.return_value = fake_image_response()
-        return session
+        return MagicMock()
 
     class FakeMpClient:
         def __init__(self, session, fingerprint, token="", user_agent=""):
@@ -237,18 +226,8 @@ def test_fetch_avatar():
     WechatSession.store(
         cookies="[]", fingerprint=FINGERPRINT, token="123", user_agent="ua"
     )
-    url, data = core.fetch_avatar("oX")
+    url = core.fetch_avatar("oX")
     assert url == HEAD_IMG_URL.replace("/64", "/0")
-    assert data == IMAGE_BYTES
-
-
-@pytest.mark.usefixtures("client")
-def test_fetch_avatar_rejects_non_image(fake_mp):
-    WechatSession.store(
-        cookies="[]", fingerprint=FINGERPRINT, token="123", user_agent="ua"
-    )
-    fake_mp["image_content_type"] = "text/html"
-    assert core.fetch_avatar("oX") is None
 
 
 @pytest.mark.usefixtures("client")

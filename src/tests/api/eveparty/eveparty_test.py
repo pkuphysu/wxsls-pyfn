@@ -6,7 +6,6 @@ from pkuphysu_wechat import settings
 from pkuphysu_wechat.api.eveparty.models import CJParticipant
 from pkuphysu_wechat.wechat import wechat_mgr
 
-IMAGE_BYTES = b"\xff\xd8fakejpeg"
 AVATAR_URL = "https://wx.qlogo.cn/mmopen/xyz/0"
 
 
@@ -16,7 +15,7 @@ def fake_fetch(monkeypatch):
 
     def fetch(openid, _credentials=None):
         calls.append(openid)
-        return AVATAR_URL, IMAGE_BYTES
+        return AVATAR_URL
 
     monkeypatch.setattr("pkuphysu_wechat.api.eveparty.models.fetch_avatar", fetch)
     return calls
@@ -44,7 +43,6 @@ def test_choujiang_shape(client):
     entry = rv.json["data"]["小明"]
     assert entry["investment"] == [1, 1, 1]
     assert entry["avatar_url"] is None
-    assert entry["avatar"] is None
 
 
 @pytest.mark.usefixtures("participant")
@@ -68,7 +66,6 @@ def test_update_avatar(fake_fetch):
     assert CJParticipant.update_avatar("oAlice") is True
     user = CJParticipant.query.filter_by(open_id="oAlice").first()
     assert user.avatar_url == AVATAR_URL
-    assert user.avatar == IMAGE_BYTES
     assert fake_fetch == ["oAlice"]
 
 
@@ -80,7 +77,6 @@ def test_update_avatar_without_session(monkeypatch):
     assert CJParticipant.update_avatar("oAlice") is False
     user = CJParticipant.query.filter_by(open_id="oAlice").first()
     assert user.avatar_url is None
-    assert user.avatar is None
 
 
 def test_invest_triggers_avatar_fetch(client, fake_fetch):
@@ -93,12 +89,11 @@ def test_invest_triggers_avatar_fetch(client, fake_fetch):
     assert "投点成功" in reply
     assert fake_fetch == ["oBob"]
     user = CJParticipant.query.filter_by(open_id="oBob").first()
-    assert user.avatar == IMAGE_BYTES
+    assert user.avatar_url == AVATAR_URL
     rv = client.open_with_token("/api/choujiang")
     entry = rv.json["data"]["小红"]
     assert entry["investment"] == [10, 20, 30]
     assert entry["avatar_url"] == AVATAR_URL
-    assert entry["avatar"].startswith("data:image/jpeg;base64,")
 
 
 @pytest.mark.usefixtures("client", "participant", "fake_credentials")
@@ -109,7 +104,7 @@ def test_refresh_avatars(monkeypatch):
         assert credentials == ("[]", "f" * 32, "123", "ua")
         if openid == "oNobody":
             return None
-        return AVATAR_URL, IMAGE_BYTES
+        return AVATAR_URL
 
     monkeypatch.setattr("pkuphysu_wechat.api.eveparty.models.fetch_avatar", fetch_one)
     assert CJParticipant.refresh_avatars() == {
@@ -118,9 +113,9 @@ def test_refresh_avatars(monkeypatch):
         "failed": 1,
     }
     user = CJParticipant.query.filter_by(open_id="oAlice").first()
-    assert user.avatar == IMAGE_BYTES
+    assert user.avatar_url == AVATAR_URL
     nobody = CJParticipant.query.filter_by(open_id="oNobody").first()
-    assert nobody.avatar is None
+    assert nobody.avatar_url is None
 
 
 @pytest.mark.usefixtures("client", "participant")
