@@ -19,13 +19,14 @@ def create_app():
 
         CORS(app, origins="http://localhost:3000")
 
-    from . import api, auth, dba, tasks, wechat
+    from . import api, auth, dba, tasks, wechat, wechat_manager
 
     api.init_app(app)
     app.register_blueprint(auth.bp)
     app.register_blueprint(dba.bp)
     app.register_blueprint(tasks.bp)
     app.register_blueprint(wechat.bp)
+    app.register_blueprint(wechat_manager.bp)
 
     app.register_error_handler(
         HTTPException, lambda e: respond_error(e.code, "GeneralError", e.description)
