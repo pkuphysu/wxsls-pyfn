@@ -81,6 +81,7 @@ invest <{"> <".join(prize_letters[:prize_count])}> | 来进行投点
             return value_invalid
 
         CJParticipant.user_invest(message.source, investment)
+        CJParticipant.update_avatar(message.source)
         return success
 
     invest.__doc__ = help_str

@@ -1,7 +1,9 @@
 import functools
 import os.path
+from logging import getLogger
 from typing import Callable
 
+import requests
 from flask import Blueprint, abort, request
 
 from pkuphysu_wechat import db
@@ -9,6 +11,8 @@ from pkuphysu_wechat.config import settings
 from pkuphysu_wechat.wechat import wechat_client
 
 bp = Blueprint("tasks", __name__, url_prefix="/tasks")
+
+logger = getLogger(__name__)
 
 
 def auth_required(func: Callable):
@@ -37,3 +41,18 @@ def menu():
 def db_create():
     db.create_all()
     return "DB Created"
+
+
+@bp.route("/wechat-manager/session-check")
+@auth_required
+def wechat_session_check():
+    from pkuphysu_wechat.wechat_manager import check_session
+
+    try:
+        valid = check_session()
+    except requests.RequestException:
+        logger.warning("Wechat session check failed: upstream error")
+        return "Session Check Error", 502
+    if not valid:
+        logger.warning("Wechat session invalid, rescan required")
+    return f"Session Valid: {valid}"
