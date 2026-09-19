@@ -1,5 +1,4 @@
 import json
-from base64 import b64encode
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from logging import getLogger
 
@@ -25,13 +24,6 @@ def get_user(f):
     return func
 
 
-def avatar_data_uri(avatar: bytes):
-    "头像字节来自 wx.qlogo.cn 快照，恒为 jpeg"
-    if not avatar:
-        return None
-    return "data:image/jpeg;base64," + b64encode(avatar).decode("ascii")
-
-
 class CJParticipant(db.Model):
     __tablename__ = "CJParticipant"
 
@@ -41,7 +33,6 @@ class CJParticipant(db.Model):
     stu_id = db.Column(db.String(32), nullable=False)
     investment = db.Column(db.String(32), nullable=False)
     avatar_url = db.Column(db.String(256))
-    avatar = db.Column(db.LargeBinary)
 
     @classmethod
     def add_user(cls, open_id, name, stu_id):
@@ -69,16 +60,16 @@ class CJParticipant(db.Model):
 
     @classmethod
     def update_avatar(cls, open_id) -> bool:
-        "Fetch one avatar via wechat_manager; no-op when no backend session exists"
-        fetched = fetch_avatar(open_id)
-        if not fetched:
+        "Fetch one avatar URL via wechat_manager; no-op when no backend session exists"
+        url = fetch_avatar(open_id)
+        if not url:
             return False
         user = db.session.get(
             cls, {"event": settings.eveparty.EVENT, "open_id": open_id}
         )
         if user is None:
             return False
-        user.avatar_url, user.avatar = fetched
+        user.avatar_url = url
         db.session.commit()
         return True
 
@@ -109,7 +100,7 @@ class CJParticipant(db.Model):
             result = fetched.get(user.open_id)
             if not result:
                 continue
-            user.avatar_url, user.avatar = result
+            user.avatar_url = result
             updated += 1
         db.session.commit()
         return {"total": len(users), "updated": updated, "failed": len(users) - updated}
@@ -120,7 +111,6 @@ class CJParticipant(db.Model):
             user.name: {
                 "investment": json.loads(user.investment),
                 "avatar_url": user.avatar_url,
-                "avatar": avatar_data_uri(user.avatar),
             }
             for user in cls.query.filter(cls.event == settings.eveparty.EVENT).all()
         }

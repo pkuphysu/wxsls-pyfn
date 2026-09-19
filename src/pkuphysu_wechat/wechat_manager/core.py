@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from http.cookiejar import Cookie
 from logging import getLogger
-from typing import Optional, Tuple
+from typing import Optional
 from urllib.parse import quote
 
 import requests
@@ -244,13 +244,15 @@ def get_mp_credentials():
     )
 
 
-def fetch_avatar(openid: str, mp_credentials=None) -> Optional[Tuple[str, bytes]]:
-    """Exchange openid for an avatar: (url, image bytes), or None.
+def fetch_avatar(openid: str, mp_credentials=None) -> Optional[str]:
+    """Exchange openid for the avatar URL, or None.
 
-    Returns None immediately when no valid backend session exists; callers
-    (e.g. the invest command hook) rely on this to no-op gracefully.
-    Worker threads must pass mp_credentials from get_mp_credentials() —
-    the default DB lookup needs a Flask app context.
+    Only the URL is returned, not the image bytes: wx.qlogo.cn snapshots may
+    expire, and the frontend falls back to a placeholder in that case —
+    refresh_avatars re-fetches fresh URLs. Returns None immediately when no
+    valid backend session exists; callers (e.g. the invest command hook) rely
+    on this to no-op gracefully. Worker threads must pass mp_credentials from
+    get_mp_credentials() — the default DB lookup needs a Flask app context.
     """
     if mp_credentials is None:
         mp_credentials = get_mp_credentials()
@@ -261,25 +263,7 @@ def fetch_avatar(openid: str, mp_credentials=None) -> Optional[Tuple[str, bytes]
     url = client.get_fans_info(openid)
     if not url:
         return None
-    url = re.sub(r"/\d+$", "/0", url)  # /64 -> /0: 640x640 snapshot
-    try:
-        img = client.session.get(url, timeout=REQUEST_TIMEOUT)
-    except requests.RequestException:
-        logger.info("MpAvatarDownloadFailed openid=%s", openid)
-        return None
-    if not img.ok or not img.content:
-        logger.info(
-            "MpAvatarDownloadBadResp openid=%s http=%s len=%s",
-            openid,
-            img.status_code,
-            len(img.content),
-        )
-        return None
-    content_type = img.headers.get("Content-Type", "")
-    if not content_type.startswith("image/"):
-        logger.info("MpAvatarNotImage openid=%s content_type=%s", openid, content_type)
-        return None
-    return url, img.content
+    return re.sub(r"/\d+$", "/0", url)  # /64 -> /0: 640x640 snapshot
 
 
 def check_session() -> bool:
